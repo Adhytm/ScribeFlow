@@ -1,0 +1,11 @@
+{
+  "name": "copywriter-root",
+  "private": true,
+  "description": "一键文案撰写根目录快捷启动配置",
+  "license": "MIT",
+  "scripts": {
+    "dev": "npm --prefix copywriter run dev",
+    "build": "npm --prefix copywriter run build",
+    "start": "npm --prefix copywriter start"
+  }
+}

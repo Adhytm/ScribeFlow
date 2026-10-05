@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-server/
+.env
+*.local
+.playwright-test/node_modules/
+.playwright-test/*.png
+.DS_Store
+*.log

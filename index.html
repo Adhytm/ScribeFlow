@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>一键文案撰写 · 电商</title>
+<style>
+:root{
+  --bg:#090a0d; --panel:#1c1d22; --panel2:#24262d; --line:rgba(255,255,255,0.08); --line2:rgba(255,255,255,0.14);
+  --tx:#f5f5f7; --tx2:#a1a1a6; --tx3:#6e6e73;
+  --ac:#2997ff; --ac-soft:rgba(41,151,255,0.14); --warn:#ff9f0a; --err:#ff453a;
+  --r:14px;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:#f5f5f7; --panel:#ffffff; --panel2:#f2f3f6; --line:rgba(0,0,0,0.07); --line2:rgba(0,0,0,0.12);
+    --tx:#1d1d1f; --tx2:#6e6e73; --tx3:#86868b;
+    --ac:#0071e3; --ac-soft:rgba(0,113,227,0.09); --warn:#f56300; --err:#ff3b30;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg);color:var(--tx);
+  font:14px/1.65 -apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei UI","Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font-family:inherit;font-size:14px;color:inherit}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(127,127,127,0.25);border-radius:99px}
+::-webkit-scrollbar-track{background:transparent}
+
+#app{display:flex;flex-direction:column;height:100vh}
+header{
+  display:flex;align-items:center;gap:14px;padding:11px 22px;
+  border-bottom:1px solid var(--line);background:var(--panel);flex:0 0 auto;
+  backdrop-filter:blur(20px);
+}
+.brand{font-size:14.5px;font-weight:600;letter-spacing:-0.015em}
+.brand small{display:block;font-size:11px;font-weight:400;color:var(--tx3);letter-spacing:0}
+.h-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pill{
+  font-size:12px;padding:4px 12px;border-radius:9999px;font-weight:500;
+  background:var(--panel2);color:var(--tx2);border:1px solid var(--line2);
+}
+.pill.ok{color:var(--ac);border-color:var(--ac);background:var(--ac-soft)}
+
+button{
+  background:var(--panel2);border:1px solid var(--line2);color:var(--tx);
+  padding:7px 13px;border-radius:8px;cursor:pointer;transition:.15s;font-weight:500;
+}
+button:hover:not(:disabled){background:var(--panel);border-color:var(--ac)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:var(--ac);border-color:transparent;color:#fff;font-weight:600}
+button.primary:hover:not(:disabled){filter:brightness(1.08)}
+button.ghost{background:transparent;border-color:transparent;color:var(--tx2);padding:4px 8px}
+button.ghost:hover:not(:disabled){background:var(--panel2);color:var(--tx)}
+button.sm{padding:4px 10px;font-size:12px;border-radius:7px}
+
+main{flex:1;display:flex;min-height:0}
+.col-form{
+  width:400px;flex:0 0 400px;border-right:1px solid var(--line);
+  overflow-y:auto;padding:16px 18px 40px;
+}
+.col-out{flex:1;overflow-y:auto;padding:16px 18px 60px;min-width:0}
+
+.grp{margin-bottom:18px}
+.grp>h3{
+  font-size:12px;font-weight:600;color:var(--tx3);margin:0 0 8px;
+  letter-spacing:1px;text-transform:none;
+}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:13px;color:var(--tx2);margin-bottom:4px}
+.field label .req{color:var(--ac)}
+.field input,.field textarea,.field select{
+  width:100%;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:7px 10px;outline:none;transition:.15s;
+}
+.field textarea{resize:vertical;min-height:62px;line-height:1.6}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--ac)}
+.field .hint{font-size:11.5px;color:var(--tx3);margin-top:3px;line-height:1.5}
+.row2{display:flex;gap:10px}
+.row2>*{flex:1;min-width:0}
+
+details.fw{border:1px solid var(--line);border-radius:var(--r);background:var(--panel2);margin-bottom:14px}
+details.fw>summary{
+  cursor:pointer;padding:9px 12px;font-size:13px;color:var(--tx2);list-style:none;
+}
+details.fw>summary::-webkit-details-marker{display:none}
+details.fw>summary::before{content:"+ ";color:var(--ac)}
+details.fw[open]>summary::before{content:"- "}
+details.fw .body{padding:0 12px 12px}
+.sec-item{border-left:2px solid var(--ac-soft);padding:4px 0 4px 10px;margin-bottom:9px}
+.sec-item b{font-size:13px;font-weight:600;color:var(--tx)}
+.sec-item p{margin:2px 0 0;font-size:12px;color:var(--tx3);line-height:1.6}
+
+.out-bar{
+  display:flex;gap:7px;align-items:center;flex-wrap:wrap;
+  padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:14px;
+}
+.out-bar .sp{flex:1}
+.empty{color:var(--tx3);font-size:13px;padding:40px 4px;text-align:center;line-height:2}
+.empty b{display:block;font-size:15px;color:var(--tx2);font-weight:600;margin-bottom:6px}
+
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:12px 14px;margin-bottom:10px;
+}
+.card.pending{opacity:.6}
+.card-head{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.card-head .idx{
+  font-size:11px;color:var(--ac);background:var(--ac-soft);
+  border-radius:5px;padding:1px 6px;flex:0 0 auto;
+}
+.card-head .nm{font-size:13px;font-weight:600}
+.card-head .goal{font-size:11.5px;color:var(--tx3);flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-head .ops{display:flex;gap:5px;flex:0 0 auto}
+.card-body{font-size:15px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+.card-body:focus{outline:none}
+.card.typing .card-body::after{content:"";display:inline-block;width:7px;height:15px;
+  background:var(--ac);vertical-align:-2px;margin-left:2px;animation:bk .9s steps(2) infinite}
+@keyframes bk{0%{opacity:1}50%{opacity:0}100%{opacity:1}}
+.sel{position:relative;display:inline-block}
+.menu{
+  position:absolute;right:0;top:calc(100% + 4px);z-index:30;
+  background:var(--panel2);border:1px solid var(--line2);border-radius:8px;
+  padding:4px;min-width:130px;display:none;box-shadow:0 6px 20px rgba(0,0,0,.4);
+}
+.menu.open{display:block}
+.menu button{display:block;width:100%;text-align:left;border:0;background:transparent;
+  padding:5px 9px;border-radius:6px;font-size:13px}
+.menu button:hover{background:#33363b}
+
+.titles-box{margin-top:4px}
+.titles-box .t{display:flex;gap:8px;padding:5px 0;border-top:1px dashed var(--line);font-size:14px}
+.titles-box .t i{color:var(--ac);font-style:normal;font-size:12px;flex:0 0 18px}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:100;
+  align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal .box{
+  background:var(--panel);border:1px solid var(--line2);border-radius:14px;
+  width:520px;max-width:100%;max-height:86vh;overflow-y:auto;padding:18px 20px;
+}
+.modal h2{margin:0 0 14px;font-size:15px;font-weight:600}
+.modal .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.note{
+  font-size:12px;color:var(--tx3);line-height:1.7;background:var(--panel2);
+  border:1px solid var(--line);border-radius:8px;padding:9px 11px;margin-top:12px;
+}
+.note code{background:#191b1d;padding:1px 5px;border-radius:4px;font-size:11.5px;color:var(--warn)}
+.ver-bar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.ver-bar .sp{flex:1}
+.ver-bar .tip{font-size:12px;color:var(--tx3);line-height:1.6}
+.ver-item{border:1px solid var(--line);border-radius:8px;padding:9px 11px;margin-bottom:8px}
+.ver-item.cur{border-color:var(--ac);background:var(--ac-soft)}
+.ver-item .vtop{display:flex;align-items:center;gap:8px}
+.ver-item .vno{font-size:11px;color:var(--ac);flex:0 0 auto;font-variant-numeric:tabular-nums}
+.ver-item .vlabel{font-size:13px;font-weight:600;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ver-item .vtime{font-size:11.5px;color:var(--tx3);flex:0 0 auto}
+.ver-item .vprev{font-size:12px;color:var(--tx3);margin-top:5px;line-height:1.6;
+  max-height:38px;overflow:hidden}
+.ver-item .vops{display:flex;gap:5px;margin-top:7px}
+button.hot{background:var(--ac-soft);border-color:var(--ac);color:var(--ac)}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
+  background:var(--panel2);border:1px solid var(--line2);border-radius:8px;
+  padding:8px 16px;font-size:13px;z-index:200;opacity:0;transition:.2s;pointer-events:none;
+}
+.toast.show{opacity:1}
+@media (max-width:980px){
+  main{flex-direction:column}
+  .col-form{width:auto;flex:0 0 auto;border-right:0;border-bottom:1px solid var(--line);max-height:50vh}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand">一键文案撰写<small>电商详情长文案 · 本地接入 API</small></div>
+    <div class="h-right">
+      <span id="apiState" class="pill">未配置</span>
+      <button id="btnCfg">API 设置</button>
+      <button id="btnVer" class="ghost">版本 0</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="col-form">
+      <div class="grp">
+        <h3>必填 · 两项就能出稿</h3>
+        <div class="field">
+          <label>产品名称 <span class="req">*</span></label>
+          <input id="fName" placeholder="如：轻氧净澈氨基酸洁面乳" />
+        </div>
+        <div class="field">
+          <label>目标人群 <span class="req">*</span></label>
+          <input id="fCrowd" placeholder="如：25-35 岁混油皮女生，加班多、怕闷痘" />
+          <div class="hint">写得越具体越好。「所有人」只会换来正确的废话。</div>
+        </div>
+      </div>
+
+      <div class="grp">
+        <h3>素材 · 填得越细写得越准</h3>
+        <div class="field">
+          <label>核心卖点（每行一条）</label>
+          <textarea id="fSell" placeholder="氨基酸表活，pH5.5 弱酸&#10;洗后 3 小时不紧绷&#10;无香精无酒精"></textarea>
+        </div>
+        <div class="field">
+          <label>用户痛点（每行一条）</label>
+          <textarea id="fPain" placeholder="皂基洗完脸绷得疼&#10;换季一用就泛红&#10;卸防晒总感觉没洗净"></textarea>
+        </div>
+        <div class="field">
+          <label>使用场景</label>
+          <textarea id="fScene" placeholder="早八赶时间、加班回家深夜洗脸、健身房后"></textarea>
+        </div>
+        <div class="field">
+          <label>信任证据</label>
+          <textarea id="fProof" placeholder="累计售出 42 万支 / 第三方斑贴测试通过 / 复购率 38%"></textarea>
+        </div>
+        <div class="field">
+          <label>与竞品的差异</label>
+          <input id="fDiff" placeholder="如：同价位里唯一做无香精的" />
+        </div>
+      </div>
+
+      <div class="grp">
+        <h3>风格控制</h3>
+        <div class="row2">
+          <div class="field">
+            <label>叙述视角</label>
+            <select id="fView">
+              <option>品牌官方</option>
+              <option>店主本人</option>
+              <option>资深用户种草</option>
+              <option>成分党理性测评</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>语气</label>
+            <select id="fTone">
+              <option>克制专业</option>
+              <option>热情口语</option>
+              <option>高级冷淡</option>
+              <option>亲切闺蜜</option>
+              <option>幽默玩梗</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>目标字数</label>
+            <select id="fLen">
+              <option value="300">约 300 字（短详情）</option>
+              <option value="600" selected>约 600 字（标准）</option>
+              <option value="900">约 900 字（长详情）</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>温度</label>
+            <select id="fTemp">
+              <option value="0.6">0.6 稳</option>
+              <option value="0.85" selected>0.85 活</option>
+              <option value="1.1">1.1 野</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>禁忌词（逗号分隔）</label>
+          <input id="fBan" placeholder="如：神器,必备,震惊,国家级" />
+        </div>
+      </div>
+
+      <details class="fw">
+        <summary>本框架的分段结构（7 段）</summary>
+        <div class="body" id="fwBody"></div>
+      </details>
+
+      <button id="btnGen" class="primary" style="width:100%;padding:9px">生成文案</button>
+      <button id="btnStop" style="width:100%;margin-top:7px;display:none">停止生成</button>
+    </section>
+
+    <section class="col-out">
+      <div class="out-bar">
+        <button id="btnCopyAll" class="sm">复制全文</button>
+        <button id="btnMd" class="sm">导出 .md</button>
+        <button id="btnTxt" class="sm">导出 .txt</button>
+        <button id="btnTitles" class="sm">顺手出 5 条标题</button>
+        <span class="sp"></span>
+        <span id="stat" class="pill"></span>
+      </div>
+      <div id="out">
+        <div class="empty">
+          <b>左边填产品名和目标人群，点生成</b>
+          只填两项也能出稿，但那是草稿。<br />把卖点、痛点、场景、证据填上，质量会是两个级别。
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="cfgModal">
+  <div class="box">
+    <h2>API 设置</h2>
+    <div class="field">
+      <label>服务商预设</label>
+      <select id="cPreset">
+        <option value="">自定义</option>
+        <option value="deepseek">DeepSeek</option>
+        <option value="silicon">硅基流动 SiliconFlow</option>
+        <option value="zhipu">智谱 BigModel</option>
+        <option value="openrouter">OpenRouter</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Base URL</label>
+      <input id="cBase" placeholder="https://api.deepseek.com/v1" />
+    </div>
+    <div class="field">
+      <label>API Key</label>
+      <input id="cKey" type="password" placeholder="sk-..." />
+      <div class="hint">只存在这台机器的浏览器本地（localStorage），不会上传到任何第三方。</div>
+    </div>
+    <div class="field">
+      <label>模型名</label>
+      <input id="cModel" placeholder="deepseek-chat" />
+    </div>
+    <div class="note">
+      本文件是纯前端，浏览器会直连你填的端点。<b>绝大多数云端服务都放行跨域请求，可直接使用</b>。
+      若点生成后报 <code>Failed to fetch</code>，说明该端点拒绝了来自本地文件的请求 —— 在本目录执行
+      <code>python -m http.server 8000</code>，然后访问
+      <code>http://localhost:8000</code> 即可绕开。
+    </div>
+    <div class="foot">
+      <button id="cTest" class="ghost">测试连接</button>
+      <button id="cCancel">取消</button>
+      <button id="cSave" class="primary">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="verModal">
+  <div class="box" style="width:640px">
+    <h2>版本快照</h2>
+    <div class="ver-bar">
+      <button id="vExportAll" class="sm">导出全部为 .md</button>
+      <button id="vBind" class="sm">绑定自动保存文件夹</button>
+      <span class="sp"></span>
+      <button id="vClear" class="sm">清空</button>
+    </div>
+    <div class="ver-bar"><span class="tip" id="vTip"></span></div>
+    <div id="verList"></div>
+    <div class="foot"><button id="vClose">关闭</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const LS = { cfg:'yw_cfg', form:'yw_form', snap:'yw_snap', dir:'yw_dirbound' };
+
+const FRAMEWORK = {
+  id:'ec-detail',
+  name:'电商详情长文案',
+  sections:[
+    {key:'hook', name:'开头钩子', goal:'第一句就抓住正在滑屏的人', len:'15-30 字',
+     must:'一个具体的人或一个具体的瞬间', ban:'寒暄、品牌自夸、"今天给大家推荐"'},
+    {key:'pain', name:'痛点放大', goal:'写出她日常里真实发生的困扰，让她觉得"说的就是我"', len:'60-90 字',
+     must:'至少 2 个具体到画面的细节', ban:'空泛形容词、夸大其词'},
+    {key:'enter', name:'卖点登场', goal:'把产品自然接进来，只讲一个最核心的卖点', len:'50-80 字',
+     must:'产品名 + 一个核心卖点，讲清"为什么能做到"', ban:'一次堆砌全部卖点'},
+    {key:'points', name:'卖点拆解', goal:'用 3 条支撑点把核心卖点坐实', len:'120-180 字',
+     must:'每条都是"是什么 + 对你有什么用"，可分行', ban:'只报参数不翻译成人话'},
+    {key:'scene', name:'场景代入', goal:'让她在脑子里看见自己用它的样子', len:'70-110 字',
+     must:'2-3 个具体场景，带时间点或动作', ban:'"适用于各种场景"这种废话'},
+    {key:'proof', name:'信任背书', goal:'消除最后一点犹豫', len:'50-90 字',
+     must:'具体数字、测试、资质或真实反馈', ban:'编造数据、虚假承诺'},
+    {key:'cta', name:'促单收口', goal:'给一个现在就下手的理由', len:'30-50 字',
+     must:'明确的行动指令 + 一个合理的紧迫理由', ban:'空洞的"快来购买"、虚假倒计时'}
+  ]
+};
+
+const PRESETS = {
+  deepseek:{base:'https://api.deepseek.com/v1', model:'deepseek-chat'},
+  silicon:{base:'https://api.siliconflow.cn/v1', model:'deepseek-ai/DeepSeek-V3'},
+  zhipu:{base:'https://open.bigmodel.cn/api/paas/v4', model:'glm-4-flash'},
+  openrouter:{base:'https://openrouter.ai/api/v1', model:'deepseek/deepseek-chat'}
+};
+
+const REWRITE_STYLES = ['更口语一点','更专业克制','更短更利落','更有画面感','购买欲更强','换成第一人称'];
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let state = { raw:'', parts:[], streaming:false, controller:null, titles:'', currentId:null };
+let dirHandle = null;
+
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ---------- 配置 ---------- */
+function loadCfg(){
+  try{ return JSON.parse(localStorage.getItem(LS.cfg) || '{}'); }catch(e){ return {}; }
+}
+function saveCfg(c){ localStorage.setItem(LS.cfg, JSON.stringify(c)); refreshApiState(); }
+function refreshApiState(){
+  const c = loadCfg();
+  const ok = !!(c.base && c.key && c.model);
+  const el = $('apiState');
+  el.textContent = ok ? ('已配置 · ' + c.model) : '未配置';
+  el.className = 'pill' + (ok ? ' ok' : '');
+}
+
+/* ---------- 表单草稿 ---------- */
+const FKEYS = ['fName','fCrowd','fSell','fPain','fScene','fProof','fDiff','fView','fTone','fLen','fTemp','fBan'];
+function saveForm(){
+  const o = {}; FKEYS.forEach(k => o[k] = $(k).value);
+  localStorage.setItem(LS.form, JSON.stringify(o));
+}
+function loadForm(){
+  try{
+    const o = JSON.parse(localStorage.getItem(LS.form) || '{}');
+    FKEYS.forEach(k => { if(o[k] !== undefined) $(k).value = o[k]; });
+  }catch(e){}
+}
+function getForm(){
+  const o = {}; FKEYS.forEach(k => o[k] = $(k).value.trim());
+  return o;
+}
+
+/* ---------- 框架说明 ---------- */
+function renderFramework(){
+  $('fwBody').innerHTML = FRAMEWORK.sections.map((s,i) =>
+    '<div class="sec-item"><b>' + (i+1) + '. ' + esc(s.name) + '</b>' +
+    '<p>目标：' + esc(s.goal) + '<br>字数：' + esc(s.len) +
+    '<br>必含：' + esc(s.must) + '<br>禁写：' + esc(s.ban) + '</p></div>'
+  ).join('');
+}
+
+/* ---------- Prompt ---------- */
+function briefText(f){
+  const lines = [];
+  lines.push('产品名称：' + f.fName);
+  if(f.fSell)  lines.push('核心卖点：\n' + f.fSell.split('\n').filter(Boolean).map(s=>'- '+s.trim()).join('\n'));
+  if(f.fPain)  lines.push('用户痛点：\n' + f.fPain.split('\n').filter(Boolean).map(s=>'- '+s.trim()).join('\n'));
+  if(f.fScene) lines.push('使用场景：' + f.fScene);
+  if(f.fProof) lines.push('信任证据：' + f.fProof);
+  if(f.fDiff)  lines.push('与竞品差异：' + f.fDiff);
+  lines.push('');
+  lines.push('目标人群：' + f.fCrowd);
+  lines.push('');
+  lines.push('叙述视角：' + f.fView);
+  lines.push('语气：' + f.fTone);
+  lines.push('全文目标字数：约 ' + f.fLen + ' 字（按各段提示的比例分配）');
+  return lines.join('\n');
+}
+
+function styleRules(f){
+  const r = [
+    '只输出正文，不写任何解释、前言、后记、括号备注。',
+    '写具体的人、具体的瞬间、具体的数字；禁止堆砌空泛形容词。',
+    '禁止使用"神器""必备""震惊""全网最低"这类空话。'
+  ];
+  if(f.fBan) r.push('绝对不要出现这些词：' + f.fBan.replace(/[，,]/g,'、'));
+  return r.map(s=>'- '+s).join('\n');
+}
+
+function buildMainPrompt(f){
+  const secs = FRAMEWORK.sections.map((s,i) =>
+    (i+1) + '. ' + s.name + '｜目标：' + s.goal + '｜字数：' + s.len +
+    '｜必含：' + s.must + '｜禁写：' + s.ban
+  ).join('\n');
+  return [
+    '# 产品与人群资料',
+    briefText(f),
+    '',
+    '# 写作准则',
+    styleRules(f),
+    '',
+    '# 写作结构（必须逐段写出，每段以 ###段落名 开头，段与段之间空一行）',
+    secs,
+    '',
+    '现在开始写。'
+  ].join('\n');
+}
+
+function buildSectionPrompt(f, sec, instruction){
+  return [
+    '# 产品与人群资料',
+    briefText(f),
+    '',
+    '# 已写出的全文',
+    state.raw || '（暂无）',
+    '',
+    '# 任务',
+    '只重写「' + sec.name + '」这一段。',
+    '该段目标：' + sec.goal,
+    '字数：' + sec.len,
+    '必含：' + sec.must,
+    '禁写：' + sec.ban,
+    '额外要求：' + instruction,
+    '',
+    '# 输出',
+    '只输出这一段的正文，不要标题，不要解释，不要引号包裹。'
+  ].join('\n');
+}
+
+/* ---------- API ---------- */
+function apiUrl(){
+  const c = loadCfg();
+  return c.base.replace(/\/+$/,'') + '/chat/completions';
+}
+
+async function streamChat(system, user, temperature, onDelta){
+  const c = loadCfg();
+  if(!c.base || !c.key || !c.model) throw new Error('尚未配置 API，点右上角「API 设置」');
+  const ctrl = new AbortController();
+  state.controller = ctrl;
+  const res = await fetch(apiUrl(), {
+    method:'POST',
+    signal: ctrl.signal,
+    headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + c.key },
+    body: JSON.stringify({
+      model: c.model, temperature: Number(temperature),
+      stream: true,
+      messages:[{role:'system',content:system},{role:'user',content:user}]
+    })
+  });
+  if(!res.ok){
+    let d = ''; try{ d = await res.text(); }catch(e){}
+    const m = {400:'请求被拒，检查模型名是否填写正确',401:'API Key 无效或过期',403:'没有该模型的权限',404:'接口地址不对，检查 Base URL',429:'被限流了，稍等再试'};
+    throw new Error((m[res.status] || ('HTTP ' + res.status)) + (d ? '\n' + d.slice(0,300) : ''));
+  }
+  const reader = res.body.getReader();
+  const dec = new TextDecoder('utf-8');
+  let buf = '', full = '';
+  while(true){
+    const {done, value} = await reader.read();
+    if(done) break;
+    buf += dec.decode(value, {stream:true});
+    const lines = buf.split('\n');
+    buf = lines.pop();
+    for(const line of lines){
+      const t = line.trim();
+      if(!t.startsWith('data:')) continue;
+      const payload = t.slice(5).trim();
+      if(payload === '[DONE]') continue;
+      let j; try{ j = JSON.parse(payload); }catch(e){ continue; }
+      const delta = j.choices && j.choices[0] && (j.choices[0].delta && j.choices[0].delta.content);
+      if(delta){ full += delta; onDelta(full, delta); }
+    }
+  }
+  state.controller = null;
+  return full;
+}
+
+function cleanSection(txt){
+  let s = String(txt).replace(/^#{2,4}\s*.*(\n|$)/, '');
+  s = s.split(/\n#{2,4}\s*/)[0];
+  return s.trim();
+}
+
+function parseSections(raw){
+  const chunks = raw.split(/\n?#{2,4}\s*/).filter(s => s.trim());
+  const out = [];
+  for(const c of chunks){
+    const i = c.indexOf('\n');
+    if(i < 0) { out.push({title:c.trim(), body:''}); continue; }
+    out.push({title:c.slice(0,i).trim(), body:c.slice(i+1).trim()});
+  }
+  return out;
+}
+
+/* ---------- 渲染 ---------- */
+function renderStreaming(raw){
+  const parsed = parseSections(raw);
+  const fw = FRAMEWORK.sections;
+  const map = {};
+  parsed.forEach((p,i) => { if(fw[i]) map[fw[i].key] = p.body; });
+  const lastIdx = Math.max(0, Math.min(parsed.length - 1, fw.length - 1));
+  const lastKey = fw[lastIdx].key;
+  state.parts = fw.map(s => ({key:s.key, body:(map[s.key] || '')}));
+  $('out').innerHTML = fw.map((s,i) => cardHTML(s, i, map[s.key] || '', s.key === lastKey)).join('');
+  bindCardOps();
+}
+
+function cardHTML(sec, i, body, typing){
+  return '<div class="card' + (typing ? ' typing' : '') + (body ? '' : ' pending') + '" data-key="' + sec.key + '">' +
+    '<div class="card-head">' +
+      '<span class="idx">' + (i+1) + '</span>' +
+      '<span class="nm">' + esc(sec.name) + '</span>' +
+      '<span class="goal" title="' + esc(sec.goal) + '">' + esc(sec.goal) + '</span>' +
+      '<span class="ops">' +
+        '<button class="sm ghost" data-act="copy">复制</button>' +
+        '<button class="sm ghost" data-act="regen">重写</button>' +
+        '<span class="sel"><button class="sm ghost" data-act="style">换写法 ▾</button>' +
+          '<span class="menu">' + REWRITE_STYLES.map(s => '<button data-style="' + esc(s) + '">' + esc(s) + '</button>').join('') + '</span>' +
+        '</span>' +
+      '</span>' +
+    '</div>' +
+    '<div class="card-body">' + esc(body) + '</div>' +
+  '</div>';
+}
+
+function renderFinal(){
+  const fw = FRAMEWORK.sections;
+  const map = {};
+  state.parts.forEach(p => map[p.key] = p.body);
+  let html = fw.map((s,i) => cardHTML(s, i, map[s.key] || '', false)).join('');
+  if(state.titles){
+    html += '<div class="card titles-box"><div class="card-head"><span class="idx">+</span>' +
+      '<span class="nm">配套标题</span></div>' +
+      state.titles.split('\n').filter(l => l.trim()).map((l,n) =>
+        '<div class="t"><i>' + (n+1) + '</i><span>' + esc(l.replace(/^\s*\d+[.、)]\s*/,'')) + '</span></div>'
+      ).join('') + '</div>';
+  }
+  $('out').innerHTML = html;
+  bindCardOps();
+}
+
+function bindCardOps(){
+  document.querySelectorAll('.card').forEach(card => {
+    const key = card.dataset.key;
+    if(!key) return;
+    const sec = FRAMEWORK.sections.find(s => s.key === key);
+    if(!sec) return;
+    card.querySelector('[data-act="copy"]').onclick = () => {
+      const txt = state.parts.find(p => p.key === key).body;
+      copy(txt, '已复制「' + sec.name + '」');
+    };
+    card.querySelector('[data-act="regen"]').onclick = () => rewriteSection(sec, '换一个写法，保持质量和字数要求');
+    const styleBtn = card.querySelector('[data-act="style"]');
+    const menu = card.querySelector('.menu');
+    styleBtn.onclick = e => {
+      e.stopPropagation();
+      document.querySelectorAll('.menu.open').forEach(m => { if(m !== menu) m.classList.remove('open'); });
+      menu.classList.toggle('open');
+    };
+    menu.querySelectorAll('[data-style]').forEach(b => {
+      b.onclick = e => { e.stopPropagation(); menu.classList.remove('open'); rewriteSection(sec, b.dataset.style); };
+    });
+  });
+  document.onclick = () => document.querySelectorAll('.menu.open').forEach(m => m.classList.remove('open'));
+}
+
+function copy(text, msg){
+  navigator.clipboard.writeText(text).then(() => toast(msg || '已复制'),
+    () => toast('复制失败，请手动选中'));
+}
+
+/* ---------- 生成 ---------- */
+async function generate(){
+  const f = getForm();
+  if(!f.fName || !f.fCrowd){ toast('至少填「产品名称」和「目标人群」'); $('fName').focus(); return; }
+  saveForm();
+  const hadBefore = !!state.raw;
+  state.titles = '';
+  setBusy(true);
+  $('stat').textContent = '生成中';
+  const system = '你是资深电商文案操盘手，写过大量转化率稳定的详情页。你写的东西具体、克制、像人话。';
+  try{
+    const raw = await streamChat(system, buildMainPrompt(f), f.fTemp, (full) => renderStreaming(full));
+    state.raw = raw;
+    renderStreaming(raw);
+    const p = parseSections(raw);
+    state.parts = FRAMEWORK.sections.map((s,i) => ({key:s.key, body:(p[i] ? p[i].body : '')}));
+    renderFinal();
+    const v = pushSnapshot(hadBefore ? '重新生成全文' : '初稿');
+    $('stat').textContent = '完成 · ' + raw.replace(/\s/g,'').length + ' 字' + (v ? ' · 已存 v' + v : '');
+  }catch(err){
+    if(err.name === 'AbortError'){ $('stat').textContent = '已停止'; }
+    else {
+      $('stat').textContent = '失败';
+      const detail = /Failed to fetch|NetworkError|CORS/i.test(err.message)
+        ? '网络或跨域被拒绝。\n\n如果是本地打开本文件导致的，请在本目录运行 python -m http.server 8000，再访问 http://localhost:8000'
+        : err.message;
+      alert('生成失败：\n' + detail);
+    }
+  }finally{
+    setBusy(false);
+  }
+}
+
+async function rewriteSection(sec, instruction){
+  const f = getForm();
+  if(!state.raw){ toast('先生成全文'); return; }
+  setBusy(true);
+  $('stat').textContent = '重写「' + sec.name + '」';
+  const card = document.querySelector('.card[data-key="' + sec.key + '"]');
+  if(card){ card.classList.add('typing'); card.querySelector('.card-body').textContent = ''; }
+  try{
+    const system = '你是资深电商文案操盘手。你只输出被要求重写的那一段正文。';
+    const txt = await streamChat(system, buildSectionPrompt(f, sec, instruction), f.fTemp, (full) => {
+      const body = card && card.querySelector('.card-body');
+      if(body) body.textContent = cleanSection(full);
+    });
+    const clean = cleanSection(txt);
+    const part = state.parts.find(p => p.key === sec.key);
+    if(part) part.body = clean;
+    const oldBody = state.parts.map(p => p.body);
+    state.raw = FRAMEWORK.sections.map((s,i) => '###' + s.name + '\n' + (oldBody[i] || '')).join('\n\n');
+    renderFinal();
+    const label = '改 ' + sec.name + ' · ' + instruction.replace('换一个写法，保持质量和字数要求', '重写');
+    const v = pushSnapshot(label);
+    $('stat').textContent = '已重写「' + sec.name + '」' + (v ? ' · 已存 v' + v : '');
+  }catch(err){
+    if(err.name !== 'AbortError'){
+      const detail = /Failed to fetch|NetworkError|CORS/i.test(err.message)
+        ? '网络或跨域被拒绝（常见于本地文件直连）。' : err.message;
+      alert('重写失败：\n' + detail);
+    }
+    renderFinal();
+  }finally{ setBusy(false); }
+}
+
+async function genTitles(){
+  const f = getForm();
+  if(!f.fName || !f.fCrowd){ toast('至少填「产品名称」和「目标人群」'); return; }
+  setBusy(true);
+  $('stat').textContent = '生成标题';
+  const system = '你是电商标题写手，擅长短句抓人。只输出结果，不加解释。';
+  const user = [
+    '# 产品与人群资料',
+    briefText(f),
+    '',
+    '# 任务',
+    '写 5 条商品标题 / 主图短句，每条不超过 20 字，5 条风格必须各不相同（如：痛点型、数字型、场景型、反常识型、指令型）。',
+    '禁止：' + (f.fBan || '神器、必备、震惊'),
+    '',
+    '输出格式：每行一条，用「1. 」开头，不要标题、不要解释。'
+  ].join('\n');
+  try{
+    const txt = await streamChat(system, user, 1.0, () => {});
+    state.titles = txt.trim();
+    renderFinal();
+    const v = pushSnapshot('加标题 · ' + txt.trim().split('\n')[0].replace(/^\s*\d+[.、)]\s*/, '').slice(0, 12));
+    $('stat').textContent = '标题已生成' + (v ? ' · 已存 v' + v : '');
+  }catch(err){
+    if(err.name !== 'AbortError') alert('标题生成失败：\n' + err.message);
+  }finally{ setBusy(false); }
+}
+
+function setBusy(b){
+  state.streaming = b;
+  $('btnGen').disabled = b;
+  $('btnTitles').disabled = b;
+  $('btnStop').style.display = b ? 'block' : 'none';
+  $('btnGen').textContent = b ? '生成中…' : '生成文案';
+}
+
+/* ---------- 导出 / 历史 ---------- */
+function fullPlain(){
+  return state.parts.map(p => p.body).filter(Boolean).join('\n\n');
+}
+function fullMarkdown(){
+  const f = getForm();
+  const body = FRAMEWORK.sections.map(s => {
+    const b = (state.parts.find(p => p.key === s.key) || {}).body;
+    return b ? '## ' + s.name + '\n\n' + b : '';
+  }).filter(Boolean).join('\n\n');
+  const head = ['# ' + f.fName, '', '> 人群：' + f.fCrowd, '', '— '.repeat(3)].join('\n');
+  const tail = state.titles ? '\n\n## 配套标题\n\n' + state.titles : '';
+  return head + '\n\n' + body + tail;
+}
+function download(name, text, mime){
+  const blob = new Blob(['\ufeff' + text], {type: mime + ';charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function loadSnaps(){
+  try{ return JSON.parse(localStorage.getItem(LS.snap) || '[]'); }catch(e){ return []; }
+}
+function saveSnaps(list){
+  try{ localStorage.setItem(LS.snap, JSON.stringify(list)); return true; }
+  catch(e){ return false; }
+}
+function migrate(){
+  if(localStorage.getItem(LS.snap)) return;
+  try{
+    const h = JSON.parse(localStorage.getItem('yw_hist') || '[]');
+    if(h.length){
+      saveSnaps(h.map(it => ({id:'m' + it.ts, ts:it.ts, label:'初稿',
+        product:it.name, crowd:it.crowd, raw:it.raw, parts:it.parts, titles:it.titles})));
+    }
+    localStorage.removeItem('yw_hist');
+  }catch(e){}
+}
+
+function snapText(s){
+  return (s.parts || []).map(p => p.body).filter(Boolean).join('\n\n');
+}
+function snapMarkdown(s){
+  const body = FRAMEWORK.sections.map(sec => {
+    const p = (s.parts || []).find(x => x.key === sec.key);
+    return p && p.body ? '## ' + sec.name + '\n\n' + p.body : '';
+  }).filter(Boolean).join('\n\n');
+  const head = ['# ' + (s.product || '文案'), '',
+    '> 版本：' + s.label, '> 时间：' + new Date(s.ts).toLocaleString('zh-CN'),
+    '> 人群：' + (s.crowd || ''), ''].join('\n');
+  const tail = s.titles ? '\n\n## 配套标题\n\n' + s.titles : '';
+  return head + '\n' + (body || '（本版仅有标题）') + tail;
+}
+function safeName(s){
+  const t = new Date(s.ts);
+  const p2 = n => String(n).padStart(2, '0');
+  const stamp = t.getFullYear() + p2(t.getMonth()+1) + p2(t.getDate()) + '-' + p2(t.getHours()) + p2(t.getMinutes()) + p2(t.getSeconds());
+  return (stamp + '_' + (s.product || '文案') + '_' + s.label)
+    .replace(/[\\/:*?"<>|·•\s]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').slice(0, 120) + '.md';
+}
+
+function pushSnapshot(label){
+  if(!state.raw && !state.titles) return null;
+  const f = getForm();
+  const s = {
+    id: 's' + Date.now() + Math.random().toString(36).slice(2, 6),
+    ts: Date.now(), label: label,
+    product: f.fName, crowd: f.fCrowd,
+    raw: state.raw,
+    parts: state.parts.map(p => ({key:p.key, body:p.body})),
+    titles: state.titles
+  };
+  let list = loadSnaps();
+  list.unshift(s);
+  if(list.length > 60) list = list.slice(0, 60);
+  let ok = saveSnaps(list);
+  if(!ok){
+    list = list.slice(0, 15);
+    ok = saveSnaps(list);
+    if(ok) toast('本地空间不足，已只保留最近 15 版');
+    else return 0;
+  }
+  state.currentId = s.id;
+  updateVerBadge();
+  autoSaveFile(s);
+  return list.length;
+}
+
+function updateVerBadge(){
+  const n = loadSnaps().length;
+  $('btnVer').textContent = '版本 ' + n;
+  $('btnVer').className = n ? 'ghost hot' : 'ghost';
+}
+
+async function bindDir(){
+  if(!window.showDirectoryPicker){
+    alert('当前浏览器不支持直接写入文件夹。\n\n' +
+      '不影响使用：每版快照依然会全部保存在浏览器本地，\n' +
+      '随时可以用「导出全部为 .md」留底。');
+    return;
+  }
+  try{
+    dirHandle = await window.showDirectoryPicker();
+    localStorage.setItem(LS.dir, '1');
+    updateVerTip();
+    toast('已绑定，后续每版自动写入该文件夹');
+    loadSnaps().slice(0, 5).forEach(autoSaveFile);
+  }catch(e){
+    if(e && e.name !== 'AbortError'){
+      alert('绑定失败：' + e.message + '\n\n' +
+        '多数情况下是因为直接双击打开了本文件，浏览器不允许写盘。\n' +
+        '在本目录执行 python -m http.server 8000，再访问 http://localhost:8000 重试即可。');
+    }
+  }
+}
+
+async function autoSaveFile(s){
+  if(!dirHandle) return;
+  try{
+    const fh = await dirHandle.getFileHandle(safeName(s), {create:true});
+    const w = await fh.createWritable();
+    await w.write(snapMarkdown(s));
+    await w.close();
+  }catch(e){}
+}
+
+function updateVerTip(){
+  const bound = !!dirHandle;
+  const canPick = !!window.showDirectoryPicker;
+  $('vTip').textContent = bound
+    ? '自动落盘：已开启，之后每一版都会同时写一份 .md 到该文件夹。'
+    : (canPick
+      ? '自动落盘：未开启。绑定文件夹后每版自动落盘；若点了没反应或报错，改用 python -m http.server 8000 打开（localhost:8000）再绑。'
+      : '自动落盘：当前浏览器不支持写盘。快照仍全部存在浏览器本地，可用「导出全部为 .md」留底。');
+  $('vBind').className = bound ? 'sm hot' : 'sm';
+  $('vBind').textContent = bound ? '已绑定文件夹'
+    : (localStorage.getItem(LS.dir) ? '重新绑定文件夹' : '绑定自动保存文件夹');
+}
+
+function renderSnapshots(){
+  const list = loadSnaps();
+  const el = $('verList');
+  if(!list.length){ el.innerHTML = '<div class="empty">还没有快照。<br>每次生成、每次重写段落、每次加标题都会自动存一版。</div>'; return; }
+  el.innerHTML = list.map((s,i) => {
+    const no = list.length - i;
+    const cur = s.id === state.currentId;
+    const prev = snapText(s).replace(/\n+/g, ' ').slice(0, 90);
+    return '<div class="ver-item' + (cur ? ' cur' : '') + '" data-i="' + i + '">' +
+      '<div class="vtop">' +
+        '<span class="vno">v' + no + (cur ? ' · 当前' : '') + '</span>' +
+        '<span class="vlabel">' + esc(s.label) + '</span>' +
+        '<span class="vtime">' + new Date(s.ts).toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'}) + '</span>' +
+      '</div>' +
+      '<div class="vprev">' + esc(s.product || '（未命名）') + ' · ' + esc(prev) + '…</div>' +
+      '<div class="vops">' +
+        '<button class="sm" data-op="load">载入此版</button>' +
+        '<button class="sm" data-op="copy">复制</button>' +
+        '<button class="sm" data-op="save">导出 .md</button>' +
+        '<button class="sm" data-op="del">删除</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  el.querySelectorAll('.ver-item').forEach(node => {
+    const s = list[Number(node.dataset.i)];
+    node.querySelector('[data-op="load"]').onclick = () => {
+      state.raw = s.raw || '';
+      state.parts = (s.parts || []).map(p => ({key:p.key, body:p.body}));
+      state.titles = s.titles || '';
+      state.currentId = s.id;
+      renderFinal();
+      closeModal('verModal');
+      toast('已载入 v' + (list.length - Number(node.dataset.i)) + '：' + s.label);
+    };
+    node.querySelector('[data-op="copy"]').onclick = () => copy(snapMarkdown(s), '已复制该版');
+    node.querySelector('[data-op="save"]').onclick = () => download(safeName(s), snapMarkdown(s), 'text/markdown');
+    node.querySelector('[data-op="del"]').onclick = () => {
+      const rest = loadSnaps().filter(x => x.id !== s.id);
+      saveSnaps(rest);
+      if(state.currentId === s.id) state.currentId = null;
+      updateVerBadge(); renderSnapshots();
+      toast('已删除该版');
+    };
+  });
+}
+
+function exportAllSnaps(){
+  const list = loadSnaps();
+  if(!list.length) return toast('还没有快照');
+  const chunks = list.slice().reverse().map((s,i) =>
+    '## v' + (i+1) + ' · ' + s.label + ' · ' + new Date(s.ts).toLocaleString('zh-CN') + '\n\n' +
+    '产品：' + (s.product || '') + '\n人群：' + (s.crowd || '') + '\n\n' + snapText(s) +
+    (s.titles ? '\n\n配套标题：\n' + s.titles : '')
+  );
+  const txt = '# 快照合集 · ' + (list[0].product || '文案') + '\n导出于 ' + new Date().toLocaleString('zh-CN') +
+    '\n共 ' + list.length + ' 版（从最早到最新）\n\n' + chunks.join('\n\n---\n\n');
+  download((list[0].product || '文案') + '_快照合集.md', txt, 'text/markdown');
+}
+
+/* ---------- 弹窗 ---------- */
+function openModal(id){ $(id).classList.add('open'); }
+function closeModal(id){ $(id).classList.remove('open'); }
+
+function init(){
+  renderFramework();
+  loadForm();
+  migrate();
+  refreshApiState();
+  updateVerBadge();
+
+  FKEYS.forEach(k => $(k).addEventListener('change', saveForm));
+
+  $('btnGen').onclick = generate;
+  $('btnStop').onclick = () => { if(state.controller) state.controller.abort(); };
+  $('btnTitles').onclick = genTitles;
+  $('btnCopyAll').onclick = () => {
+    if(!fullPlain()) return toast('还没有内容');
+    copy(fullMarkdown(), '已复制全文（Markdown）');
+  };
+  $('btnMd').onclick = () => {
+    if(!fullPlain()) return toast('还没有内容');
+    download((getForm().fName || '文案') + '.md', fullMarkdown(), 'text/markdown');
+  };
+  $('btnTxt').onclick = () => {
+    if(!fullPlain()) return toast('还没有内容');
+    download((getForm().fName || '文案') + '.txt', fullPlain(), 'text/plain');
+  };
+
+  $('btnCfg').onclick = () => {
+    const c = loadCfg();
+    $('cBase').value = c.base || '';
+    $('cKey').value = c.key || '';
+    $('cModel').value = c.model || '';
+    $('cPreset').value = '';
+    openModal('cfgModal');
+  };
+  $('cPreset').onchange = e => {
+    const p = PRESETS[e.target.value];
+    if(!p) return;
+    $('cBase').value = p.base; $('cModel').value = p.model; $('cKey').focus();
+  };
+  $('cSave').onclick = () => {
+    saveCfg({base:$('cBase').value.trim(), key:$('cKey').value.trim(), model:$('cModel').value.trim()});
+    closeModal('cfgModal'); toast('已保存');
+  };
+  $('cCancel').onclick = () => closeModal('cfgModal');
+  $('cTest').onclick = async () => {
+    const btn = $('cTest'); btn.disabled = true; btn.textContent = '测试中…';
+    const backup = loadCfg();
+    saveCfg({base:$('cBase').value.trim(), key:$('cKey').value.trim(), model:$('cModel').value.trim()});
+    try{
+      await streamChat('You are a test.', '回复两个字：正常', 0.2, () => {});
+      toast('连接正常');
+    }catch(e){
+      alert('连接失败：\n' + e.message);
+    }finally{
+      saveCfg(backup); btn.disabled = false; btn.textContent = '测试连接';
+    }
+  };
+
+  $('btnVer').onclick = () => { renderSnapshots(); updateVerTip(); openModal('verModal'); };
+  $('vClose').onclick = () => closeModal('verModal');
+  $('vExportAll').onclick = exportAllSnaps;
+  $('vBind').onclick = bindDir;
+  $('vClear').onclick = () => {
+    if(!loadSnaps().length) return toast('已经是空的');
+    if(!confirm('清空全部快照？此操作不可撤销。\n建议先点「导出全部为 .md」留底。')) return;
+    saveSnaps([]); state.currentId = null; updateVerBadge(); renderSnapshots(); toast('已清空');
+  };
+
+  document.querySelectorAll('.modal').forEach(m => {
+    m.onclick = e => { if(e.target === m) m.classList.remove('open'); };
+  });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open')); });
+  document.addEventListener('keydown', e => {
+    if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); if(!state.streaming) generate(); }
+  });
+}
+
+init();
+</script>
+</body>
+</html>

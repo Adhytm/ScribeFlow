@@ -1,0 +1,24 @@
+# 依赖包与构建产物
+node_modules/
+dist/
+dist-server/
+
+# 环境变量与敏感配置（防止个人 API Key 与本地端点外泄）
+.env
+*.local
+
+# 个人工作区记忆与隐私笔记（绝对不可公开）
+.workbuddy/
+.docs/
+
+# 测试运行环境与重量级截图（保留测试脚本本身，过滤依赖与测试产物）
+.playwright-test/node_modules/
+.playwright-test/*.png
+copywriter/.playwright-test/node_modules/
+copywriter/.playwright-test/*.png
+test-results/
+
+# 操作系统与编辑器临时文件
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,1875 @@
+/* ============================================================
+   设计系统 · Apple 商业现代风（Apple Commercial Design System）
+   支持：浅色（清爽高级纸质质感） / 深色（Space Black 沉浸暗夜） / 跟随系统
+   ============================================================ */
+
+:root {
+  --r: 14px;
+  --r-sm: 8px;
+  --r-pill: 9999px;
+  --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei",
+    "Segoe UI", system-ui, sans-serif;
+}
+
+/* 默认 / 深色模式：Apple Space Black / macOS Pro 沉浸暗夜 */
+:root,
+[data-theme="dark"] {
+  --bg: #090a0d;
+  --bg-soft: #121317;
+  --panel: #1c1d22;
+  --panel2: #24262d;
+  --panel3: #2d3039;
+  --glass-bg: rgba(28, 29, 34, 0.92);
+  --header-bg: rgba(18, 19, 23, 0.85);
+  
+  --line: rgba(255, 255, 255, 0.08);
+  --line2: rgba(255, 255, 255, 0.14);
+  --line-strong: rgba(255, 255, 255, 0.24);
+  
+  --tx: #f5f5f7;
+  --tx2: #a1a1a6;
+  --tx3: #6e6e73;
+  
+  --ac: #2997ff;
+  --ac-strong: #52acff;
+  --ac-ink: #ffffff;
+  --ac-soft: rgba(41, 151, 255, 0.14);
+  --ac-ring: rgba(41, 151, 255, 0.35);
+  
+  --warn: #ff9f0a;
+  --warn-soft: rgba(255, 159, 10, 0.14);
+  --bad: #ff453a;
+  --bad-soft: rgba(255, 69, 58, 0.14);
+  --ok: #32d74b;
+  --ok-soft: rgba(50, 215, 75, 0.14);
+  
+  --shadow-pop: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  --scroll-thumb: rgba(255, 255, 255, 0.18);
+  --scroll-thumb-hover: rgba(255, 255, 255, 0.32);
+  
+  --editor-shadow: 0 24px 64px -20px rgba(0, 0, 0, 0.85),
+                   0 0 0 1px rgba(255, 255, 255, 0.08),
+                   inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --radial-glow: rgba(41, 151, 255, 0.06);
+  --selection-bg: rgba(41, 151, 255, 0.35);
+  --editor-selection-bg: rgba(41, 151, 255, 0.32);
+  
+  --primary-btn-bg: linear-gradient(180deg, #2997ff 0%, #0071e3 100%);
+  --primary-btn-hover: linear-gradient(180deg, #47a6ff 0%, #1a82f0 100%);
+  --primary-btn-color: #ffffff;
+  color-scheme: dark;
+}
+
+/* 浅色模式：Apple 官网 / macOS Sonoma 清爽高亮高级商业白 */
+[data-theme="light"] {
+  --bg: #f5f5f7;
+  --bg-soft: #eceef1;
+  --panel: #ffffff;
+  --panel2: #f2f3f6;
+  --panel3: #e5e7ec;
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --header-bg: rgba(255, 255, 255, 0.85);
+  
+  --line: rgba(0, 0, 0, 0.07);
+  --line2: rgba(0, 0, 0, 0.12);
+  --line-strong: rgba(0, 0, 0, 0.2);
+  
+  --tx: #1d1d1f;
+  --tx2: #6e6e73;
+  --tx3: #86868b;
+  
+  --ac: #0071e3;
+  --ac-strong: #0077ed;
+  --ac-ink: #ffffff;
+  --ac-soft: rgba(0, 113, 227, 0.09);
+  --ac-ring: rgba(0, 113, 227, 0.22);
+  
+  --warn: #f56300;
+  --warn-soft: rgba(245, 99, 0, 0.1);
+  --bad: #ff3b30;
+  --bad-soft: rgba(255, 59, 48, 0.1);
+  --ok: #28cd41;
+  --ok-soft: rgba(40, 205, 65, 0.12);
+  
+  --shadow-pop: 0 16px 36px -6px rgba(0, 0, 0, 0.15),
+                0 2px 10px rgba(0, 0, 0, 0.04),
+                0 0 0 1px rgba(0, 0, 0, 0.07);
+  --scroll-thumb: rgba(0, 0, 0, 0.16);
+  --scroll-thumb-hover: rgba(0, 0, 0, 0.28);
+  
+  --editor-shadow: 0 20px 48px -14px rgba(0, 0, 0, 0.09),
+                   0 2px 10px rgba(0, 0, 0, 0.03),
+                   0 0 0 1px rgba(0, 0, 0, 0.06);
+  --radial-glow: rgba(0, 113, 227, 0.05);
+  --selection-bg: rgba(0, 113, 227, 0.22);
+  --editor-selection-bg: rgba(0, 113, 227, 0.24);
+  
+  --primary-btn-bg: linear-gradient(180deg, #0077ed 0%, #0071e3 100%);
+  --primary-btn-hover: linear-gradient(180deg, #1f85f5 0%, #0077ed 100%);
+  --primary-btn-color: #ffffff;
+  color-scheme: light;
+}
+
+/* 系统浅色偏好时的 CSS 兜底 */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f5f5f7;
+    --bg-soft: #eceef1;
+    --panel: #ffffff;
+    --panel2: #f2f3f6;
+    --panel3: #e5e7ec;
+    --glass-bg: rgba(255, 255, 255, 0.92);
+    --header-bg: rgba(255, 255, 255, 0.85);
+    
+    --line: rgba(0, 0, 0, 0.07);
+    --line2: rgba(0, 0, 0, 0.12);
+    --line-strong: rgba(0, 0, 0, 0.2);
+    
+    --tx: #1d1d1f;
+    --tx2: #6e6e73;
+    --tx3: #86868b;
+    
+    --ac: #0071e3;
+    --ac-strong: #0077ed;
+    --ac-ink: #ffffff;
+    --ac-soft: rgba(0, 113, 227, 0.09);
+    --ac-ring: rgba(0, 113, 227, 0.22);
+    
+    --warn: #f56300;
+    --warn-soft: rgba(245, 99, 0, 0.1);
+    --bad: #ff3b30;
+    --bad-soft: rgba(255, 59, 48, 0.1);
+    --ok: #28cd41;
+    --ok-soft: rgba(40, 205, 65, 0.12);
+    
+    --shadow-pop: 0 16px 36px -6px rgba(0, 0, 0, 0.15),
+                  0 2px 10px rgba(0, 0, 0, 0.04),
+                  0 0 0 1px rgba(0, 0, 0, 0.07);
+    --scroll-thumb: rgba(0, 0, 0, 0.16);
+    --scroll-thumb-hover: rgba(0, 0, 0, 0.28);
+    
+    --editor-shadow: 0 20px 48px -14px rgba(0, 0, 0, 0.09),
+                     0 2px 10px rgba(0, 0, 0, 0.03),
+                     0 0 0 1px rgba(0, 0, 0, 0.06);
+    --radial-glow: rgba(0, 113, 227, 0.05);
+    --selection-bg: rgba(0, 113, 227, 0.22);
+    --editor-selection-bg: rgba(0, 113, 227, 0.24);
+    
+    --primary-btn-bg: linear-gradient(180deg, #0077ed 0%, #0071e3 100%);
+    --primary-btn-hover: linear-gradient(180deg, #1f85f5 0%, #0077ed 100%);
+    --primary-btn-color: #ffffff;
+    color-scheme: light;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font: 14px/1.65 var(--font-stack);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 14px;
+  color: inherit;
+}
+input, textarea, .pm-body {
+  caret-color: var(--ac);
+}
+::selection {
+  background: var(--selection-bg);
+}
+
+/* 优雅细致的 macOS 风格悬浮滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.15s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ---------- 顶栏（Apple 磨砂玻璃沉浸式导航） ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 22px;
+  border-bottom: 1px solid var(--line);
+  background: var(--header-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  flex: 0 0 auto;
+  z-index: 40;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+/* Apple Pro App 风格羽毛笔图标徽标 */
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #0077ed 0%, #0056b3 100%);
+  box-shadow: 0 3px 10px -2px rgba(0, 113, 227, 0.45),
+              inset 0 1px 1px rgba(255, 255, 255, 0.4),
+              inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.brand-mark::after {
+  content: "";
+  width: 17px;
+  height: 17px;
+  background-color: #ffffff;
+  -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19l7-7 3 3-7 7-3-3z'/%3E%3Cpath d='M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3Cpath d='M2 2l7.586 7.586'/%3E%3Ccircle cx='11' cy='11' r='2'/%3E%3C/svg%3E") no-repeat center / contain;
+  mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19l7-7 3 3-7 7-3-3z'/%3E%3Cpath d='M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'/%3E%3Cpath d='M2 2l7.586 7.586'/%3E%3Ccircle cx='11' cy='11' r='2'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+.brand-t {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: var(--tx);
+}
+.brand-t small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--tx3);
+  letter-spacing: 0.01em;
+  margin-top: 1px;
+}
+
+/* 状态指示胶囊：Apple 灵动微状态 */
+.pill {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  background: var(--panel2);
+  color: var(--tx2);
+  border: 1px solid var(--line2);
+  margin-left: auto;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+}
+.pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+  flex: 0 0 6px;
+  box-shadow: 0 0 6px var(--ok-soft);
+}
+.pill.busy {
+  color: var(--ac);
+  border-color: var(--ac);
+  background: var(--ac-soft);
+}
+.pill.busy::before {
+  background: var(--ac);
+  box-shadow: 0 0 8px var(--ac);
+  animation: blink 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.col-left {
+  width: 340px;
+  flex: 0 0 340px;
+  border-right: 1px solid var(--line);
+  background: var(--bg-soft);
+  overflow-y: auto;
+  padding: 18px 18px 48px;
+}
+.col-mid {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 24px 32px 80px;
+  background:
+    radial-gradient(1100px 420px at 50% -70px, var(--radial-glow), transparent 70%),
+    var(--bg);
+}
+.col-right {
+  width: 330px;
+  flex: 0 0 330px;
+  border-left: 1px solid var(--line);
+  background: var(--bg-soft);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ---------- 表单与分组（Apple Inspector 质感） ---------- */
+.grp {
+  margin-bottom: 22px;
+}
+.grp > h3 {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tx3);
+  margin: 0 0 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.grp > h3::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+  margin-left: 8px;
+}
+
+.field {
+  display: block;
+  margin-bottom: 13px;
+}
+.field > span {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--tx);
+  margin-bottom: 6px;
+}
+.field > span i {
+  color: var(--ac);
+  font-style: normal;
+  margin-left: 2px;
+}
+.field > em {
+  display: block;
+  font-size: 11.5px;
+  color: var(--tx3);
+  font-style: normal;
+  margin-top: 5px;
+  line-height: 1.5;
+}
+
+.field input, .field textarea, .field select {
+  width: 100%;
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  border-radius: 9px;
+  padding: 8.5px 12px;
+  color: var(--tx);
+  outline: none;
+  font-size: 13.5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.16s ease,
+              box-shadow 0.16s ease,
+              background 0.16s ease;
+}
+.field input:hover, .field textarea:hover, .field select:hover {
+  border-color: var(--line-strong);
+  background: var(--panel);
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--ac);
+  box-shadow: 0 0 0 3.5px var(--ac-ring);
+  background: var(--panel);
+}
+.field input::placeholder, .field textarea::placeholder {
+  color: var(--tx3);
+  opacity: 0.8;
+}
+.field textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* Apple 专属平滑下拉指示箭头 */
+.field select, .api-detail select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2386868b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+.row2 {
+  display: flex;
+  gap: 10px;
+}
+.row2 > * {
+  flex: 1;
+  min-width: 0;
+}
+.row2.tight {
+  margin-top: 10px;
+}
+
+/* ---------- 按钮系统（Apple HIG 触觉质感） ---------- */
+button {
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  color: var(--tx);
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: background 0.15s ease,
+              border-color 0.15s ease,
+              color 0.15s ease,
+              box-shadow 0.15s ease,
+              transform 0.1s ease;
+}
+button:hover:not(:disabled) {
+  background: var(--panel3);
+  border-color: var(--line-strong);
+}
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ac-ring);
+}
+
+/* 主 CTA：Apple Action 醒目蓝胶囊 */
+button.primary {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background: var(--primary-btn-bg);
+  border: 1px solid transparent;
+  color: var(--primary-btn-color);
+  border-radius: 9px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 14px var(--ac-soft);
+}
+button.primary:hover:not(:disabled) {
+  background: var(--primary-btn-hover);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 6px 18px var(--ac-soft);
+  transform: translateY(-0.5px);
+}
+button.primary:active:not(:disabled) {
+  transform: scale(0.985);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+button.sm {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 7px;
+  font-weight: 500;
+}
+button.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--tx2);
+  box-shadow: none;
+}
+button.ghost:hover:not(:disabled) {
+  background: var(--panel2);
+  border-color: transparent;
+  color: var(--tx);
+}
+
+/* 次级强调（接受建议 / 测试连接） */
+button.hot {
+  background: var(--ac);
+  border-color: transparent;
+  color: var(--ac-ink);
+  font-weight: 600;
+  box-shadow: 0 2px 6px -1px var(--ac-ring);
+}
+button.hot:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-0.5px);
+}
+
+/* 警示与终止（停止生成 / 危险确认） */
+button.danger, button.primary.danger {
+  background: var(--bad);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 14px var(--bad-soft);
+}
+button.danger:hover:not(:disabled), button.primary.danger:hover:not(:disabled) {
+  filter: brightness(1.08);
+  background: var(--bad);
+}
+
+/* ---------- 顶栏主题切换胶囊（macOS Segmented Control） ---------- */
+.theme-toggle {
+  display: inline-flex;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  padding: 2px;
+  gap: 2px;
+  align-items: center;
+  flex: 0 0 auto;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--tx2);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.theme-btn:hover:not(:disabled) {
+  color: var(--tx);
+  background: rgba(127, 127, 127, 0.08);
+}
+.theme-btn.on {
+  background: var(--panel);
+  border-color: var(--line2);
+  color: var(--tx);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+.theme-btn.on .theme-text {
+  font-weight: 600;
+  color: var(--ac);
+}
+.theme-btn.on .theme-icon {
+  stroke: var(--ac);
+}
+.theme-icon {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  transition: stroke 0.16s ease;
+}
+.theme-text {
+  white-space: nowrap;
+}
+
+/* ---------- 创作心智分段控件（Apple 经典平滑胶囊切换） ---------- */
+.seg-control {
+  display: flex;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: 8px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.seg-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--tx2);
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.seg-btn:hover:not(:disabled) {
+  color: var(--tx);
+  background: rgba(127, 127, 127, 0.06);
+}
+.seg-btn.on {
+  background: var(--panel);
+  border-color: var(--line2);
+  color: var(--tx);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07), 0 0.5px 1.5px rgba(0, 0, 0, 0.04);
+}
+.seg-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.seg-btn.on .seg-label {
+  color: var(--ac);
+}
+.seg-sub {
+  font-size: 10.5px;
+  color: var(--tx3);
+  margin-top: 2px;
+  line-height: 1.2;
+}
+.seg-btn.on .seg-sub {
+  color: var(--tx2);
+}
+.seg-hint {
+  font-size: 11.5px;
+  color: var(--tx3);
+  line-height: 1.5;
+  padding: 2px 2px 0;
+}
+
+/* ---------- 框架说明折叠卡（Apple Disclosure Group） ---------- */
+details.fw {
+  border: 1px solid var(--line2);
+  border-radius: var(--r);
+  background: var(--panel);
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+details.fw:hover {
+  border-color: var(--line-strong);
+}
+details.fw > summary {
+  cursor: pointer;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--tx2);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s, background 0.15s;
+}
+details.fw > summary:hover {
+  color: var(--tx);
+  background: var(--panel2);
+}
+details.fw > summary::-webkit-details-marker {
+  display: none;
+}
+/* Apple 经典平滑旋转小箭头 */
+details.fw > summary::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid var(--ac);
+  border-bottom: 2px solid var(--ac);
+  transform: rotate(-45deg);
+  margin-right: 9px;
+  margin-bottom: 2px;
+  flex: 0 0 6px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+details.fw[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.fw-body {
+  padding: 2px 14px 14px;
+}
+.fw-flow-bar {
+  margin: 6px 0 12px;
+  padding: 8px 12px;
+  background: var(--panel2);
+  border-radius: var(--r-sm);
+  font-size: 11.5px;
+  line-height: 1.6;
+  border: 1px solid var(--line);
+}
+.fw-flow-bar span {
+  color: var(--ac);
+  font-weight: 600;
+}
+.fw-flow-bar em {
+  color: var(--tx2);
+  font-style: normal;
+}
+.sec-item {
+  border-left: 2.5px solid var(--ac);
+  padding: 4px 0 4px 11px;
+  margin-bottom: 10px;
+}
+.sec-item b {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--tx);
+}
+.sec-item p {
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  color: var(--tx3);
+  line-height: 1.6;
+}
+
+/* ---------- 自定义段落编排器（Apple Pro 紧凑型卡片表单） ---------- */
+.custom-builder-grp {
+  margin-bottom: 20px;
+}
+.custom-builder-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 0 1px;
+}
+.custom-builder-head h3 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tx3);
+  white-space: nowrap;
+}
+.custom-builder-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.custom-preset-select {
+  font-size: 11px;
+  padding: 3px 18px 3px 7px;
+  border-radius: 6px;
+  background-color: var(--panel2);
+  border: 1px solid var(--line2);
+  color: var(--tx2);
+  cursor: pointer;
+  outline: none;
+  background-position: right 5px center;
+  max-width: 95px;
+  white-space: nowrap;
+}
+.custom-preset-select:hover {
+  border-color: var(--ac);
+  color: var(--tx);
+}
+.custom-tool-btn {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  color: var(--tx2);
+  cursor: pointer;
+  box-shadow: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.custom-tool-btn:hover {
+  background: var(--panel);
+  color: var(--ac);
+  border-color: var(--ac);
+}
+
+.custom-sec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.custom-sec-card {
+  background: var(--panel);
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: all 0.16s ease;
+}
+.custom-sec-card:hover {
+  border-color: var(--line-strong);
+}
+.custom-sec-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.custom-sec-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ac);
+  background: var(--ac-soft);
+  border: 1px solid var(--ac-ring);
+  border-radius: 5px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+}
+.custom-sec-name-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--tx);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.custom-sec-name-input:focus {
+  border-color: var(--ac);
+  box-shadow: 0 0 0 2.5px var(--ac-ring);
+  background: var(--panel);
+}
+.custom-sec-del {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--tx3);
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.15s ease;
+}
+.custom-sec-del:hover {
+  background: var(--bad-soft);
+  color: var(--bad);
+  border-color: var(--bad);
+}
+
+.custom-sec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px 9px;
+}
+.custom-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.custom-field span {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--tx3);
+}
+.custom-field input {
+  width: 100%;
+  font-size: 11.5px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  color: var(--tx);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, background 0.15s;
+}
+.custom-field input:focus {
+  border-color: var(--ac);
+  box-shadow: 0 0 0 2px var(--ac-ring);
+  background: var(--panel);
+}
+.custom-field input::placeholder {
+  color: var(--tx3);
+  opacity: 0.7;
+}
+
+.custom-add-btn {
+  width: 100%;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ac);
+  background: var(--ac-soft);
+  border: 1px dashed var(--ac-ring);
+  border-radius: 9px;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.16s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.custom-add-btn:hover {
+  background: var(--panel);
+  border-color: var(--ac);
+  border-style: solid;
+  transform: translateY(-0.5px);
+  box-shadow: 0 2px 8px var(--ac-soft);
+}
+.custom-add-btn:active {
+  transform: scale(0.985);
+}
+
+/* ---------- 后端与服务商设置（Apple Popover Sheet） ---------- */
+.api-box {
+  position: relative;
+}
+.api-detail {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 100;
+  width: 400px;
+  background: var(--panel);
+  border: 1px solid var(--line2);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: var(--shadow-pop);
+  animation: pop-sheet 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes pop-sheet {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.api-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 4px 0;
+}
+.api-row span {
+  color: var(--tx3);
+}
+.api-row b {
+  font-weight: 500;
+}
+.api-row b.ok {
+  color: var(--ok);
+}
+.api-row b.bad {
+  color: var(--bad);
+}
+
+.api-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+.api-chip {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--tx2);
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.15s ease;
+}
+.api-chip:hover {
+  border-color: var(--ac);
+  color: var(--ac);
+  background: var(--ac-soft);
+  transform: translateY(-0.5px);
+}
+
+.api-test-res {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  line-height: 1.55;
+  font-weight: 500;
+}
+.api-test-res.ok {
+  background: var(--ok-soft);
+  border: 1px solid var(--ok);
+  color: var(--ok);
+}
+.api-test-res.bad {
+  background: var(--bad-soft);
+  border: 1px solid var(--bad);
+  color: var(--bad);
+}
+.api-note {
+  font-size: 11.5px;
+  color: var(--tx3);
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+code {
+  background: var(--panel2);
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  color: var(--warn);
+}
+
+/* ---------- 标题条（Apple Intelligence 风格胶囊栏） ---------- */
+.titles-strip {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 820px;
+  margin: 0 auto 18px;
+  border: 1px solid var(--line2);
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: var(--panel);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  animation: rise 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.titles-strip b {
+  font-size: 12.5px;
+  color: var(--ac);
+  font-weight: 600;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.titles-strip b::before {
+  content: "✦";
+  font-size: 11px;
+}
+.ts-list, .ts-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.ts-item {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--tx);
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  border-radius: 8px;
+  padding: 3px 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.ts-item:hover {
+  border-color: var(--ac);
+  color: var(--ac);
+  background: var(--panel);
+  transform: translateY(-0.5px);
+}
+.ts-item:active {
+  transform: translateY(0.5px);
+}
+.ts-close {
+  background: none;
+  border: none;
+  color: var(--tx3);
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.15s ease;
+}
+.ts-close:hover {
+  color: var(--tx);
+  background: var(--panel2);
+}
+
+/* ---------- 编辑器（Apple Pages / Digital Canvas 纸质画布） ---------- */
+.editor-wrap {
+  position: relative;
+  max-width: 820px;
+  margin: 0 auto;
+  background: var(--panel);
+  border: 1px solid var(--line2);
+  border-radius: 20px;
+  padding: 38px 46px 46px;
+  box-shadow: var(--editor-shadow);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.editor-placeholder {
+  position: absolute;
+  left: 46px;
+  top: 40px;
+  color: var(--tx3);
+  font-size: 14.5px;
+  line-height: 1.9;
+  pointer-events: none;
+}
+
+.pm-body {
+  outline: none;
+  font-size: 15.5px;
+  line-height: 1.85;
+  min-height: 480px;
+  color: var(--tx);
+  letter-spacing: -0.005em;
+}
+.pm-body h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16.5px;
+  font-weight: 600;
+  margin: 30px 0 12px;
+  color: var(--tx);
+  letter-spacing: -0.015em;
+}
+.pm-body h2::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 4px;
+  height: 15px;
+  border-radius: 4px;
+  background: var(--ac);
+  box-shadow: 0 0 8px var(--ac-soft);
+}
+.pm-body h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 20px 0 8px;
+  color: var(--tx);
+}
+.pm-body p {
+  margin: 0 0 14px;
+}
+.pm-body ::selection {
+  background: var(--editor-selection-bg);
+}
+
+.editor-stat-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--tx3);
+  font-variant-numeric: tabular-nums;
+}
+.editor-stat-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.editor-stat-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.editor-stat-bar b {
+  color: var(--ac);
+  font-weight: 600;
+}
+.stat-dot {
+  opacity: 0.45;
+}
+
+/* pending / streaming 区域的高亮（柔和荧光笔质感） */
+.sg-range {
+  border-radius: 4px;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.sg-pending {
+  background: var(--warn-soft);
+  box-shadow: inset 0 -2px 0 var(--warn);
+}
+.sg-streaming {
+  background: var(--ac-soft);
+  box-shadow: inset 0 -2px 0 var(--ac);
+}
+
+/* ---------- 选中后浮出的工具条（Apple Quick Actions 气泡） ---------- */
+.sel-toolbar {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--line2);
+  border-radius: 16px;
+  padding: 10px;
+  width: 326px;
+  z-index: 30;
+  box-shadow: var(--shadow-pop);
+  animation: pop 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.sel-toolbar.below {
+  transform: translate(-50%, 0);
+  animation-name: pop-below;
+}
+
+.st-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.st-chip {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  color: var(--tx2);
+  box-shadow: none;
+  transition: all 0.15s ease;
+}
+.st-chip:hover:not(:disabled) {
+  color: var(--ac);
+  border-color: var(--ac);
+  background: var(--ac-soft);
+  transform: translateY(-0.5px);
+}
+
+.st-row {
+  display: flex;
+  gap: 6px;
+}
+.st-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--panel);
+  border: 1px solid var(--line2);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.st-input:focus {
+  border-color: var(--ac);
+  box-shadow: 0 0 0 3px var(--ac-ring);
+}
+.st-go {
+  font-size: 12.5px;
+  padding: 6px 14px;
+  font-weight: 600;
+  background: var(--ac);
+  border: 1px solid transparent;
+  color: var(--ac-ink);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px -1px var(--ac-ring);
+  transition: all 0.15s ease;
+}
+.st-go:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-0.5px);
+}
+.st-go:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* ---------- 右栏（建议卡与快照记录） ---------- */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+  padding: 4px 10px 0;
+  gap: 4px;
+}
+.tabs button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  border-radius: 8px 8px 0 0;
+  padding: 10px 0 9px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tx3);
+  border-bottom: 2px solid transparent;
+  box-shadow: none;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tabs button:hover:not(:disabled) {
+  background: transparent;
+  color: var(--tx);
+}
+.tabs button.on {
+  color: var(--ac);
+  border-bottom-color: var(--ac);
+  font-weight: 600;
+}
+
+.tab-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  min-height: 0;
+}
+.panel-empty {
+  color: var(--tx3);
+  font-size: 12.5px;
+  line-height: 2;
+  padding: 36px 10px;
+  text-align: center;
+}
+
+/* 本地自动落盘状态栏（Apple Drive 徽标胶囊） */
+.hs-dir-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--tx2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+.hs-dir-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hs-dir-title b {
+  color: var(--ac);
+  font-weight: 600;
+}
+
+.sg-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.sg-bar .sp, .hs-panel .sp {
+  flex: 1;
+}
+.sg-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--tx2);
+}
+
+/* 修改建议卡（Apple Reminders / Diff 气泡卡片） */
+.sg-card {
+  border: 1px solid var(--line2);
+  border-radius: 14px;
+  padding: 13px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: var(--panel);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: rise 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.sg-card:hover {
+  border-color: var(--ac);
+  background: var(--panel);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+.sg-card.streaming {
+  opacity: 0.85;
+}
+.sg-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+.sg-tag {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ac);
+  background: var(--ac-soft);
+  border: 1px solid var(--ac-ring);
+  border-radius: var(--r-pill);
+  padding: 2px 9px;
+  letter-spacing: 0.01em;
+}
+.sg-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ac);
+  animation: blink 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.sg-orig {
+  font-size: 12.5px;
+  color: var(--tx2);
+  line-height: 1.65;
+  max-height: 72px;
+  overflow: hidden;
+  text-decoration: line-through;
+  text-decoration-color: var(--tx3);
+  padding: 5px 9px;
+  background: var(--panel2);
+  border-radius: 6px;
+  border-left: 2.5px solid var(--bad);
+  transition: max-height 0.2s ease;
+}
+.sg-orig.expanded {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.sg-expand-btn {
+  background: none;
+  border: none;
+  padding: 3px 0;
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--ac);
+  cursor: pointer;
+  display: block;
+  box-shadow: none;
+}
+.sg-expand-btn:hover {
+  text-decoration: underline;
+  background: transparent;
+}
+.sg-arrow {
+  font-size: 12px;
+  color: var(--tx3);
+  margin: 4px 0;
+  text-align: center;
+  opacity: 0.7;
+}
+.sg-new {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--tx);
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 5px 8px;
+  background: var(--ac-soft);
+  border-radius: 6px;
+  border-left: 2.5px solid var(--ac);
+}
+.sg-ops {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+/* 历史快照产品筛选器 */
+.hs-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+  margin-bottom: 4px;
+  scrollbar-width: none;
+}
+.hs-filter-bar::-webkit-scrollbar {
+  display: none;
+}
+.hs-filter-chip {
+  flex: 0 0 auto;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line2);
+  background: var(--panel2);
+  color: var(--tx2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.hs-filter-chip:hover {
+  border-color: var(--line-strong);
+  color: var(--tx);
+}
+.hs-filter-chip.active {
+  background: var(--ac);
+  border-color: var(--ac);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 4px var(--ac-soft);
+}
+
+/* 历史快照版本项 */
+.hs-item {
+  border: 1px solid var(--line2);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  cursor: default;
+  background: var(--panel);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: rise 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hs-item:hover {
+  border-color: var(--line-strong);
+  background: var(--panel2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.hs-item.cur {
+  border-color: var(--ac);
+  background: var(--ac-soft);
+  box-shadow: 0 0 0 1px var(--ac);
+}
+.hs-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vno {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tx2);
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  border-radius: 5px;
+  padding: 1px 6px;
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.hs-item.cur .vno {
+  color: var(--ac);
+  background: var(--panel);
+  border-color: var(--ac-ring);
+}
+.vlabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tx);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vtime {
+  font-size: 11px;
+  color: var(--tx3);
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.hs-prev {
+  font-size: 12px;
+  color: var(--tx2);
+  margin-top: 6px;
+  line-height: 1.6;
+  max-height: 38px;
+  overflow: hidden;
+}
+
+/* ---------- 动效（Apple 曲线） ---------- */
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop {
+  from { opacity: 0; transform: translate(-50%, -100%) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+@keyframes pop-below {
+  from { opacity: 0; transform: translate(-50%, 0) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.narrow-nav {
+  display: none;
+}
+
+/* ---------- 超宽屏优化 (P3-5) ---------- */
+@media (min-width: 1600px) {
+  .editor-wrap, .titles-strip {
+    max-width: 960px;
+  }
+}
+@media (min-width: 2000px) {
+  .editor-wrap, .titles-strip {
+    max-width: 1040px;
+  }
+}
+
+/* ---------- 窄屏适配响应式 (P2-7) ---------- */
+@media (max-width: 1100px) {
+  .narrow-nav {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line2);
+    padding: 8px 12px;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  }
+  .narrow-nav button {
+    flex: 1;
+    font-size: 12.5px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: var(--panel2);
+    border: 1px solid var(--line2);
+    color: var(--tx2);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .narrow-nav button.active {
+    background: var(--ac);
+    color: #fff;
+    border-color: var(--ac);
+    font-weight: 600;
+  }
+  .app-main {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .col-left, .col-right {
+    width: auto;
+    flex: 0 0 auto;
+    border: 0;
+  }
+  .col-left {
+    border-bottom: 1px solid var(--line);
+  }
+  .col-right {
+    border-top: 1px solid var(--line);
+  }
+  .col-mid {
+    padding: 16px 14px 60px;
+  }
+  .editor-wrap {
+    padding: 24px 22px 32px;
+    border-radius: 14px;
+  }
+  .editor-placeholder {
+    left: 22px;
+    top: 26px;
+  }
+}
+
+/* ---------- 全局 Feedback 反馈体系 (Toast & ConfirmDialog) ---------- */
+.toast-viewport {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 420px;
+  pointer-events: none;
+}
+.toast-card {
+  pointer-events: auto;
+  background: var(--panel);
+  border: 1px solid var(--line2);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-pop);
+  animation: toast-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+@keyframes toast-slide-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.toast-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.toast-success .toast-badge {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.toast-error .toast-badge {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+.toast-warn .toast-badge {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.toast-info .toast-badge {
+  background: var(--ac-soft);
+  color: var(--ac);
+}
+.toast-msg {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tx);
+  line-height: 1.4;
+  word-break: break-word;
+}
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--tx3);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.toast-close:hover {
+  color: var(--tx);
+  background: var(--panel2);
+}
+.toast-detail-wrap {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.toast-detail-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  color: var(--tx2);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  border-radius: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+}
+.toast-copy-btn {
+  align-self: flex-end;
+}
+
+/* ConfirmDialog */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: dialog-fade-in 0.18s ease-out both;
+}
+@keyframes dialog-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.dialog-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--panel);
+  border: 1px solid var(--line2);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: var(--shadow-pop);
+  animation: dialog-pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes dialog-pop-in {
+  from { opacity: 0; transform: scale(0.95) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.dialog-title {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tx);
+}
+.dialog-body {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--tx2);
+  margin-bottom: 20px;
+  white-space: pre-wrap;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
