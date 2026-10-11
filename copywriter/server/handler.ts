@@ -91,27 +91,27 @@ function resolveApiKey(provider: string, base: string, bodyKey?: string, env: Ll
   const lowerBase = (base || '').toLowerCase();
   if (lowerBase.includes('anthropic') || provider === 'anthropic') {
     if (!isOfficialHost('anthropic', base)) return undefined;
-    return env.ANTHROPIC_API_KEY || env.OPENAI_API_KEY;
+    return env.ANTHROPIC_API_KEY;
   }
   if (lowerBase.includes('moonshot') || provider === 'moonshot') {
     if (!isOfficialHost('moonshot', base)) return undefined;
-    return env.MOONSHOT_API_KEY || env.OPENAI_API_KEY;
+    return env.MOONSHOT_API_KEY;
   }
   if (lowerBase.includes('dashscope') || lowerBase.includes('maas.aliyuncs.com') || provider === 'dashscope' || provider === 'aliyun-token-plan') {
     if (!isOfficialHost('aliyun', base)) return undefined;
-    return env.TOKEN_PLAN_API_KEY || env.DASHSCOPE_API_KEY || env.ALIYUN_API_KEY || env.OPENAI_API_KEY;
+    return env.TOKEN_PLAN_API_KEY || env.DASHSCOPE_API_KEY || env.ALIYUN_API_KEY;
   }
   if (lowerBase.includes('googleapis.com') || provider === 'gemini') {
     if (!isOfficialHost('gemini', base)) return undefined;
-    return env.GEMINI_API_KEY || env.GOOGLE_API_KEY || env.OPENAI_API_KEY;
+    return env.GEMINI_API_KEY || env.GOOGLE_API_KEY;
   }
   if (lowerBase.includes('bigmodel.cn') || provider === 'zhipu' || provider === 'zhipu-coding') {
     if (!isOfficialHost('zhipu', base)) return undefined;
-    return env.ZHIPU_API_KEY || env.OPENAI_API_KEY;
+    return env.ZHIPU_API_KEY;
   }
   if (lowerBase.includes('deepseek') || provider === 'deepseek') {
     if (!isOfficialHost('deepseek', base)) return undefined;
-    return env.DEEPSEEK_API_KEY || env.OPENAI_API_KEY;
+    return env.DEEPSEEK_API_KEY;
   }
   // 未识别渠道（含 local）：服务端 Key 只发给 OpenAI 官方域名
   if (!isOfficialHost('openai', base)) return undefined;
@@ -301,16 +301,16 @@ export async function handleLlm(req: IncomingMessage, res: ServerResponse, env: 
       activeProvider,
       hasKey: !!env.OPENAI_API_KEY,
       providers: {
-        local: { hasKey: true, base: env.LOCAL_BASE_URL || 'http://127.0.0.1:11434/v1', model: env.LOCAL_MODEL || 'qwen2.5:7b', name: '本地大模型' },
-        moonshot: { hasKey: !!(env.MOONSHOT_API_KEY || env.OPENAI_API_KEY), base: 'https://api.moonshot.ai/v1/chat/completions', model: 'moonshot-v1-8k', name: 'Moonshot (Kimi)' },
-        dashscope: { hasKey: !!(env.DASHSCOPE_API_KEY || env.ALIYUN_API_KEY || env.OPENAI_API_KEY), base: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus', name: '阿里云 DashScope' },
-        'aliyun-token-plan': { hasKey: !!(env.TOKEN_PLAN_API_KEY || env.DASHSCOPE_API_KEY || env.ALIYUN_API_KEY || env.OPENAI_API_KEY), base: 'https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus', name: '阿里云 Token Plan' },
-        gemini: { hasKey: !!(env.GEMINI_API_KEY || env.GOOGLE_API_KEY || env.OPENAI_API_KEY), base: 'https://generativelanguage.googleapis.com', model: 'gemini-2.0-flash', name: 'Google Gemini' },
-        zhipu: { hasKey: !!(env.ZHIPU_API_KEY || env.OPENAI_API_KEY), base: 'https://open.bigmodel.cn/api/paas/v4', model: 'glm-4-flash', name: '智谱 AI (GLM)' },
-        'zhipu-coding': { hasKey: !!(env.ZHIPU_API_KEY || env.OPENAI_API_KEY), base: 'https://open.bigmodel.cn/api/coding/paas/v4', model: 'glm-4-flash', name: '智谱 AI Coding Plan' },
-        deepseek: { hasKey: !!(env.DEEPSEEK_API_KEY || env.OPENAI_API_KEY), base: 'https://api.deepseek.com', model: 'deepseek-chat', name: 'DeepSeek 官方' },
-        openai: { hasKey: !!env.OPENAI_API_KEY, base: 'https://api.openai.com/v1', model: 'gpt-4o', name: 'OpenAI 官方' },
-        anthropic: { hasKey: !!(env.ANTHROPIC_API_KEY || env.OPENAI_API_KEY), base: 'https://api.anthropic.com/v1/messages', model: 'claude-3-5-sonnet-20241022', name: 'Anthropic Claude' }
+        local: { hasKey: true, base: env.LOCAL_BASE_URL || 'http://127.0.0.1:11434/v1', model: env.LOCAL_MODEL || 'qwen3.8-27b', name: '本地大模型' },
+        moonshot: { hasKey: !!env.MOONSHOT_API_KEY, base: 'https://api.moonshot.ai/v1/chat/completions', model: 'kimi-k3', name: 'Moonshot (Kimi)' },
+        dashscope: { hasKey: !!(env.TOKEN_PLAN_API_KEY || env.DASHSCOPE_API_KEY || env.ALIYUN_API_KEY), base: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen3.8-max', name: '阿里云 DashScope' },
+        'aliyun-token-plan': { hasKey: !!(env.TOKEN_PLAN_API_KEY || env.DASHSCOPE_API_KEY || env.ALIYUN_API_KEY), base: 'https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1', model: 'qwen3.8-max', name: '阿里云 Token Plan' },
+        gemini: { hasKey: !!(env.GEMINI_API_KEY || env.GOOGLE_API_KEY), base: 'https://generativelanguage.googleapis.com', model: 'gemini-3.8-flash', name: 'Google Gemini' },
+        zhipu: { hasKey: !!env.ZHIPU_API_KEY, base: 'https://open.bigmodel.cn/api/paas/v4', model: 'glm-5.3', name: '智谱 AI (GLM)' },
+        'zhipu-coding': { hasKey: !!env.ZHIPU_API_KEY, base: 'https://open.bigmodel.cn/api/coding/paas/v4', model: 'glm-5.3', name: '智谱 AI Coding Plan' },
+        deepseek: { hasKey: !!env.DEEPSEEK_API_KEY, base: 'https://api.deepseek.com', model: 'deepseek-flash', name: 'DeepSeek 官方' },
+        openai: { hasKey: !!env.OPENAI_API_KEY, base: 'https://api.openai.com/v1', model: 'gpt-6.1-sol', name: 'OpenAI 官方' },
+        anthropic: { hasKey: !!env.ANTHROPIC_API_KEY, base: 'https://api.anthropic.com/v1/messages', model: 'claude-sonnet-5-5', name: 'Anthropic Claude' }
       }
     });
   }
@@ -318,6 +318,37 @@ export async function handleLlm(req: IncomingMessage, res: ServerResponse, env: 
   if (req.method !== 'POST') {
     res.statusCode = 405;
     return res.end('Method Not Allowed');
+  }
+
+  // 安全防护 (P1-4)：校验 Origin 与 Referer，拦截非本机的跨站代理盗刷
+  const reqHeaders = req.headers || {};
+  const origin = reqHeaders.origin;
+  const referer = reqHeaders.referer;
+  if (origin) {
+    try {
+      const originHost = new URL(origin).hostname;
+      const isLoopback = originHost === 'localhost' || originHost === '127.0.0.1' || originHost === '::1' || originHost === '[::1]';
+      if (!isLoopback) {
+        return sendJson(res, 403, { error: '禁止跨站非法调用本地 AI 代理' });
+      }
+    } catch {
+      return sendJson(res, 403, { error: '无效请求源' });
+    }
+  } else if (referer) {
+    try {
+      const refHost = new URL(referer).hostname;
+      const isLoopback = refHost === 'localhost' || refHost === '127.0.0.1' || refHost === '::1' || refHost === '[::1]';
+      if (!isLoopback) {
+        return sendJson(res, 403, { error: '禁止跨站非法调用本地 AI 代理' });
+      }
+    } catch {
+      return sendJson(res, 403, { error: '无效请求来源' });
+    }
+  }
+
+  const secFetchSite = reqHeaders['sec-fetch-site'];
+  if (secFetchSite === 'cross-site') {
+    return sendJson(res, 403, { error: '禁止跨站访问' });
   }
 
   let body: ChatRequest;
@@ -536,7 +567,7 @@ export async function handleLlm(req: IncomingMessage, res: ServerResponse, env: 
         method: 'POST',
         headers,
         body: JSON.stringify({
-          model: body.model || env.OPENAI_MODEL || 'gpt-4o',
+          model: body.model || env.OPENAI_MODEL || 'gpt-6.1-sol',
           messages: [{ role: 'user', content: 'hi' }],
           max_tokens: 1
         }),

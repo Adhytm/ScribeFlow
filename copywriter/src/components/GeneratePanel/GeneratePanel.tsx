@@ -1,4 +1,5 @@
-import type { Brief, FrameworkSection } from '../../types/document';
+import { useState } from 'react';
+import type { Brief, FrameworkSection, ProductProfile } from '../../types/document';
 import {
   FRAMEWORKS,
   getFramework,
@@ -7,6 +8,9 @@ import {
   THINKING_MODES,
   DEFAULT_CUSTOM_SECTIONS
 } from '../../prompts/frameworks';
+import { ProductProfileManager } from './ProductProfileManager';
+import { IndustryInspirationHub } from './IndustryInspirationHub';
+import { SmartExtractModal } from './SmartExtractModal';
 
 interface Props {
   brief: Brief;
@@ -82,8 +86,51 @@ export function GeneratePanel({
     onChange({ customSections: DEFAULT_CUSTOM_SECTIONS });
   };
 
+  const [showExtractModal, setShowExtractModal] = useState(false);
+
+  const handleApplyProfile = (p: ProductProfile) => {
+    onChange({
+      name: p.name,
+      crowd: p.crowd,
+      sell: p.sell,
+      pain: p.pain,
+      scene: p.scene,
+      proof: p.proof,
+      diff: p.diff
+    });
+  };
+
+  const handleInjectMaterial = (field: 'pain' | 'sell' | 'proof' | 'scene', text: string) => {
+    const currentVal = (brief[field] || '').trim();
+    const separator = currentVal ? '\n' : '';
+    onChange({ [field]: currentVal + separator + text });
+  };
+
   return (
     <div className="gp">
+      {/* 1. 商品档案资产管理器（Jasper 风格：载入与存储） */}
+      <ProductProfileManager
+        brief={brief}
+        onApplyProfile={handleApplyProfile}
+      />
+
+      {/* 2. 快捷工具条：粘贴竞品逆向拆解 */}
+      <div className="gp-tool-row">
+        <button
+          type="button"
+          className="gp-extract-tool-btn"
+          onClick={() => setShowExtractModal(true)}
+          title="复制小红书/淘宝/说明书材料粘贴，系统自动逆向拆解为结构化数据"
+        >
+          <span className="et-icon">📑</span>
+          <span>粘贴竞品/材料一键拆解</span>
+          <span className="et-badge">省时神器</span>
+        </button>
+      </div>
+
+      {/* 3. 行业爆款灵感弹药库（知衣风格：点词即填） */}
+      <IndustryInspirationHub onInject={handleInjectMaterial} />
+
       <div className="grp">
         <h3>文案框架 · 目标形式</h3>
         <label className="field">
@@ -353,6 +400,13 @@ export function GeneratePanel({
         <button className="sm" disabled={busy} onClick={onTitles}>出 5 条标题</button>
         <button className="sm" disabled={busy} onClick={onSaveVersion}>存一版</button>
       </div>
+
+      {/* 4. 粘贴竞品/材料一键逆向拆解模态窗 */}
+      <SmartExtractModal
+        isOpen={showExtractModal}
+        onClose={() => setShowExtractModal(false)}
+        onApply={extracted => onChange(extracted)}
+      />
     </div>
   );
 }

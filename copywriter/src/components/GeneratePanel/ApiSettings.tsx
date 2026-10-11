@@ -28,12 +28,9 @@ export const SERVICE_PRESETS: PresetInfo[] = [
       { label: 'LM Studio 默认 (1234)', url: 'http://127.0.0.1:1234/v1' }
     ],
     models: [
-      { label: 'qwen2.5:7b (推荐主力)', name: 'qwen2.5:7b' },
-      { label: 'qwen2.5:14b', name: 'qwen2.5:14b' },
-      { label: 'llama3.1:8b', name: 'llama3.1:8b' },
-      { label: 'qwen3.8-27b (未验证)', name: 'qwen3.8-27b' }
+      { label: 'qwen3.8-27b', name: 'qwen3.8-27b' }
     ],
-    note: '本地离线模型免密直连。在终端运行 ollama run qwen2.5:7b 即可。'
+    note: '本地离线模型免密直连。在终端运行 ollama run qwen3.8-27b 即可。'
   },
   {
     id: 'moonshot',
@@ -44,9 +41,8 @@ export const SERVICE_PRESETS: PresetInfo[] = [
       { label: 'Base URL', url: 'https://api.moonshot.ai/v1' }
     ],
     models: [
-      { label: 'moonshot-v1-8k (主力推荐)', name: 'moonshot-v1-8k' },
-      { label: 'moonshot-v1-32k', name: 'moonshot-v1-32k' },
-      { label: 'kimi-k3 (未验证)', name: 'kimi-k3' }
+      { label: 'kimi-k3', name: 'kimi-k3' },
+      { label: 'kimi-k2.6', name: 'kimi-k2.6' }
     ]
   },
   {
@@ -55,13 +51,11 @@ export const SERVICE_PRESETS: PresetInfo[] = [
     shortName: 'DashScope',
     urls: [
       { label: 'OpenAI 兼容端点（推荐）', url: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
-      { label: '原生 API 前缀（勿直接用于本工具）', url: 'https://dashscope.aliyuncs.com/api/v1' }
+      { label: '原生 API 前缀', url: 'https://dashscope.aliyuncs.com/api/v1' }
     ],
     models: [
-      { label: 'qwen-plus (官方主力推荐)', name: 'qwen-plus' },
-      { label: 'qwen-max (旗舰)', name: 'qwen-max' },
-      { label: 'qwen-turbo (极速)', name: 'qwen-turbo' },
-      { label: 'qwen3.8-max (未验证)', name: 'qwen3.8-max' }
+      { label: 'qwen3.8-max', name: 'qwen3.8-max' },
+      { label: 'qwen-3.8-flash', name: 'qwen-3.8-flash' }
     ]
   },
   {
@@ -72,9 +66,8 @@ export const SERVICE_PRESETS: PresetInfo[] = [
       { label: '东南亚 Token Plan 端点', url: 'https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1' }
     ],
     models: [
-      { label: 'qwen-plus (主力推荐)', name: 'qwen-plus' },
-      { label: 'qwen-max (旗舰)', name: 'qwen-max' },
-      { label: 'qwen3.8-max (未验证)', name: 'qwen3.8-max' }
+      { label: 'qwen3.8-max', name: 'qwen3.8-max' },
+      { label: 'qwen-3.8-flash', name: 'qwen-3.8-flash' }
     ]
   },
   {
@@ -86,9 +79,8 @@ export const SERVICE_PRESETS: PresetInfo[] = [
       { label: 'Interactions API 端点', url: 'https://generativelanguage.googleapis.com/v1beta/interactions' }
     ],
     models: [
-      { label: 'gemini-2.0-flash (最新极速推荐)', name: 'gemini-2.0-flash' },
-      { label: 'gemini-1.5-pro (主力推荐)', name: 'gemini-1.5-pro' },
-      { label: 'gemini-3.1-pro (未验证)', name: 'gemini-3.1-pro' }
+      { label: 'gemini-3.8-flash', name: 'gemini-3.8-flash' },
+      { label: 'gemini-3.1-pro', name: 'gemini-3.1-pro' }
     ]
   },
   {
@@ -99,9 +91,8 @@ export const SERVICE_PRESETS: PresetInfo[] = [
       { label: 'GLM 官方端点', url: 'https://open.bigmodel.cn/api/paas/v4' }
     ],
     models: [
-      { label: 'glm-4-flash (极速免费推荐)', name: 'glm-4-flash' },
-      { label: 'glm-4-plus (主力旗舰)', name: 'glm-4-plus' },
-      { label: 'glm-5.3 (未验证)', name: 'glm-5.3' }
+      { label: 'glm-5.3', name: 'glm-5.3' },
+      { label: 'glm-5.3-flash', name: 'glm-5.3-flash' }
     ]
   },
   {
@@ -112,9 +103,8 @@ export const SERVICE_PRESETS: PresetInfo[] = [
       { label: 'Coding Plan 专属端点', url: 'https://open.bigmodel.cn/api/coding/paas/v4' }
     ],
     models: [
-      { label: 'glm-4-flash (推荐)', name: 'glm-4-flash' },
-      { label: 'glm-4-plus (主力旗舰)', name: 'glm-4-plus' },
-      { label: 'glm-5.3 (未验证)', name: 'glm-5.3' }
+      { label: 'glm-5.3', name: 'glm-5.3' },
+      { label: 'glm-5.3-flash', name: 'glm-5.3-flash' }
     ]
   },
   {
@@ -126,9 +116,8 @@ export const SERVICE_PRESETS: PresetInfo[] = [
       { label: 'v1 兼容端点', url: 'https://api.deepseek.com/v1' }
     ],
     models: [
-      { label: 'deepseek-chat (V3 官方主力推荐)', name: 'deepseek-chat' },
-      { label: 'deepseek-reasoner (R1 推理)', name: 'deepseek-reasoner' },
-      { label: 'DeepSeek-V4.1-Flash (未验证)', name: 'DeepSeek-V4.1-Flash' }
+      { label: 'deepseek-flash', name: 'deepseek-flash' },
+      { label: 'deepseek-pro', name: 'deepseek-pro' }
     ]
   },
   {
@@ -139,10 +128,9 @@ export const SERVICE_PRESETS: PresetInfo[] = [
       { label: 'OpenAI 官方端点', url: 'https://api.openai.com/v1' }
     ],
     models: [
-      { label: 'gpt-4o (官方主力推荐)', name: 'gpt-4o' },
-      { label: 'gpt-4o-mini (轻量经济)', name: 'gpt-4o-mini' },
-      { label: 'o3-mini (推理模型)', name: 'o3-mini' },
-      { label: 'gpt-6-astra (未验证)', name: 'gpt-6-astra' }
+      { label: 'gpt-6.1-sol', name: 'gpt-6.1-sol' },
+      { label: 'gpt-6-astra', name: 'gpt-6-astra' },
+      { label: 'gpt-6-luna', name: 'gpt-6-luna' }
     ]
   },
   {
@@ -154,9 +142,10 @@ export const SERVICE_PRESETS: PresetInfo[] = [
       { label: 'Anthropic 根端点', url: 'https://api.anthropic.com' }
     ],
     models: [
-      { label: 'claude-3-5-sonnet-20241022 (主力推荐)', name: 'claude-3-5-sonnet-20241022' },
-      { label: 'claude-3-5-haiku-20241022 (极速轻量)', name: 'claude-3-5-haiku-20241022' },
-      { label: 'claude-sonnet-5 (未验证)', name: 'claude-sonnet-5' }
+      { label: 'claude-sonnet-5-5', name: 'claude-sonnet-5-5' },
+      { label: 'claude-opus-5-5', name: 'claude-opus-5-5' },
+      { label: 'claude-fable-5-1', name: 'claude-fable-5-1' },
+      { label: 'fable-5-1', name: 'fable-5-1' }
     ],
     note: '已自动附带版本头 anthropic-version: 2023-06-01'
   }

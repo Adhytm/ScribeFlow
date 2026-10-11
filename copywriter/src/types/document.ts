@@ -40,6 +40,20 @@ export interface Brief {
   customSections?: FrameworkSection[];
 }
 
+/** 商品档案（Jasper 风格）：用于持久化沉淀并一键回填真实产品参数与背书数据 */
+export interface ProductProfile {
+  id: string;
+  name: string;
+  category: string;
+  crowd: string;
+  sell: string;
+  pain: string;
+  scene: string;
+  proof: string;
+  diff: string;
+  createdAt: number;
+}
+
 export interface Snapshot {
   id: string;
   seq?: number;
@@ -105,3 +119,21 @@ export interface ClientProviderConfig {
   model: string;
   apiKey?: string;
 }
+
+/** 动态下一步操作动作胶囊 */
+export interface DynamicActionPill {
+  id: string;
+  label: string;
+  instruction: string;
+  desc?: string;
+}
+
+/** AI 修改后给出的进一步建议与下一步动作 */
+export interface PostEditAdvice {
+  lastAction: string;          // 刚刚完成的动作，例如“强化痛点共鸣”、“初稿生成”
+  summary: string;             // AI 主动诊断与下一步建议
+  actions: DynamicActionPill[];// 推荐的下一步操作胶囊
+  timestamp: number;
+  isAnalyzing?: boolean;       // 是否正在深度诊断
+}
+

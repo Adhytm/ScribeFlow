@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
 import { SuggestionExtension, dispatchSuggestion, getSuggestions } from './components/Editor/suggestionPlugin';
 import { EditorPane } from './components/Editor/Editor';
 import { SuggestionPanel } from './components/Editor/SuggestionPanel';
@@ -8,12 +9,12 @@ import { GeneratePanel } from './components/GeneratePanel/GeneratePanel';
 import { ApiSettings } from './components/GeneratePanel/ApiSettings';
 import { HistoryPanel } from './components/History/HistoryPanel';
 import { ThemeToggle } from './components/Theme/ThemeToggle';
-import { DEFAULT_CUSTOM_SECTIONS, buildMainPrompt, buildRewritePrompt, buildTitlePrompt, getFramework } from './prompts/frameworks';
-import { escapeHtml, parseSections, sectionsToHtml, streamChat, textToHtml } from './services/llm';
+import { DEFAULT_CUSTOM_SECTIONS, buildMainPrompt, buildRewritePrompt, buildTitlePrompt, getFramework, buildPostEditAdvicePrompt, getHeuristicPostEditAdvice } from './prompts/frameworks';
+import { escapeHtml, parseSections, sectionsToHtml, streamChat, textToHtml, requestPostEditAdvice } from './services/llm';
 import { download, storage, DEFAULT_PROVIDER_CONFIGS, autoSaveSnapshotToFile } from './services/storage';
 import { ToastContainer, toast } from './components/Feedback/Toast';
 import { ConfirmDialogContainer, confirmDialog } from './components/Feedback/ConfirmDialog';
-import type { Brief, Snapshot, Suggestion, ThemeMode } from './types/document';
+import type { Brief, Snapshot, Suggestion, ThemeMode, PostEditAdvice } from './types/document';
 import type { Editor } from '@tiptap/react';
 
 const EMPTY_BRIEF: Brief = {
@@ -33,16 +34,19 @@ function sameSuggestions(a: Suggestion[], b: Suggestion[]): boolean {
   });
 }
 
-/** 智能格式化替换内容：同段单行替换直接插入行内内容，防止段落被炸裂成3段 */
+/** 智能格式化替换内容：同段替换保持行内结构，换行转为 <br>，防止段落被炸裂成多个独立块 (P2-4) */
 function formatReplacement(editor: Editor, from: number, to: number, text: string): string {
   const trimmed = text.trim();
-  const hasMultipleLines = trimmed.includes('\n');
   const $from = editor.state.doc.resolve(from);
   const $to = editor.state.doc.resolve(to);
   const sameParent = $from.sameParent($to);
 
-  if (sameParent && !hasMultipleLines) {
-    return escapeHtml(trimmed);
+  if (sameParent) {
+    return trimmed
+      .split(/\n+/)
+      .map(line => escapeHtml(line.trim()))
+      .filter(Boolean)
+      .join('<br>');
   }
   return textToHtml(trimmed);
 }
@@ -58,6 +62,9 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [busyKind, setBusyKind] = useState<'generate' | 'rewrite' | 'titles' | null>(null);
   const [streamCharCount, setStreamCharCount] = useState<number>(0);
+  const [advice, setAdvice] = useState<PostEditAdvice | null>(null);
+  const [isAdvising, setIsAdvising] = useState<boolean>(false);
+  const adviceAbortRef = useRef<AbortController | null>(null);
   const [status, setStatus] = useState('');
   const [tab, setTab] = useState<'sg' | 'hs'>('sg');
   const [narrowTab, setNarrowTab] = useState<'left' | 'mid' | 'right'>('mid');
@@ -127,22 +134,75 @@ export default function App() {
     return () => window.clearTimeout(t);
   }, [brief]);
 
-  // TASK-006 & P2-8: 监听快照存储降级与空间溢出事件
+  // P0-1: 监听快照存储空间写满事件，保护现有数据不被破坏
   useEffect(() => {
     const handler = (e: any) => {
       const detail = e.detail;
       if (detail?.failed) {
-        toast.error('本地存储已满', '快照写入失败，无法保存新版本。请及时在历史面板中「导出全部」并清理老旧版本。');
-      } else {
-        toast.warn('本地存储空间不足', '已自动保留最近 15 版快照，建议点击历史面板中的「导出全部」进行备份。');
+        toast.error('本地存储空间已满', '存储配额达到上限，新快照写入失败。系统已保护现有历史版本不被破坏，请在历史面板中「导出全部」并清理老旧版本。');
       }
     };
     window.addEventListener('cw:storage-degraded', handler);
     return () => window.removeEventListener('cw:storage-degraded', handler);
   }, []);
 
+  // P2-1: 监听多标签页存储变动，同步快照并提醒避免盲写覆盖
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'cw.doc' && e.newValue) {
+        toast.info(
+          '文档在其他窗口被修改',
+          '检测到外部标签页更新了正文草稿。如有需要，可在历史面板载入最新版本。'
+        );
+      }
+      if (e.key === 'cw.snapshots') {
+        setSnaps(storage.loadSnapshots());
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // P2-2: 页面关闭或刷新防丢保护（AI 处理中或存在待确认建议时进行系统拦截）
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const hasUnconfirmed = sugs.some(s => s.status === 'pending' || s.status === 'streaming');
+      if (busy || hasUnconfirmed) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [busy, sugs]);
+
+  const [zenMode, setZenMode] = useState<boolean>(false);
+
+  // ESC 键随时快速退出专注模式
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && zenMode) {
+        setZenMode(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [zenMode]);
+
   const editor = useEditor({
-    extensions: [StarterKit.configure({ heading: { levels: [2, 3] } }), SuggestionExtension],
+    extensions: [
+      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'editor-link',
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        }
+      }),
+      SuggestionExtension
+    ],
     content: storage.loadDoc(),
     editorProps: { attributes: { class: 'pm-body' } },
     onUpdate: ({ editor }) => scheduleSave(editor.getHTML())
@@ -250,6 +310,83 @@ export default function App() {
     download(filename, md);
   }, [editor, brief.name, brief.crowd, titles]);
 
+  /**
+   * 触发 AI 副驾驶（Copilot）在修改或生成后的进一步建议：
+   * 1. 0ms 瞬间应用智能启发式建议作为基线；
+   * 2. 异步请求真实大模型对当前全文进行深度审阅，输出量身定制的诊断与动态动作胶囊。
+   */
+  const triggerAdvice = useCallback(async (lastAction: string, snippet?: string) => {
+    if (!editor) return;
+
+    // 1. 立即计算启发式建议，保证 0ms 瞬间反馈
+    const heuristic = getHeuristicPostEditAdvice(lastAction, snippet);
+    setAdvice({
+      lastAction,
+      summary: heuristic.summary,
+      actions: heuristic.actions,
+      timestamp: Date.now(),
+      isAnalyzing: true
+    });
+
+    // 2. 取消可能正在运行的上一次诊断请求
+    if (adviceAbortRef.current) {
+      adviceAbortRef.current.abort();
+    }
+    const ctrl = new AbortController();
+    adviceAbortRef.current = ctrl;
+
+    setIsAdvising(true);
+    try {
+      const curCfg = settings.providers[settings.provider];
+      const fullText = editor.getText();
+      if (!fullText.trim()) {
+        setAdvice(prev => prev ? { ...prev, isAnalyzing: false } : null);
+        return;
+      }
+
+      const { system, user } = buildPostEditAdvicePrompt(
+        brief,
+        fullText,
+        lastAction,
+        snippet
+      );
+
+      const deepAdvice = await requestPostEditAdvice(system, user, {
+        temperature: 0.7,
+        thinkingMode: '即兴',
+        provider: settings.provider,
+        base: curCfg?.base,
+        model: curCfg?.model,
+        apiKey: curCfg?.apiKey,
+        signal: ctrl.signal
+      });
+
+      if (deepAdvice && deepAdvice.summary && deepAdvice.actions && deepAdvice.actions.length > 0) {
+        setAdvice({
+          lastAction,
+          summary: deepAdvice.summary,
+          actions: deepAdvice.actions.map((a, i) => ({
+            id: `dyn-${Date.now()}-${i}`,
+            label: a.label,
+            instruction: a.instruction
+          })),
+          timestamp: Date.now(),
+          isAnalyzing: false
+        });
+      } else {
+        setAdvice(prev => prev ? { ...prev, isAnalyzing: false } : null);
+      }
+    } catch (e: any) {
+      if (e?.name !== 'AbortError') {
+        console.warn('获取 AI 副驾深度审阅失败，沿用启发式建议:', e);
+      }
+      setAdvice(prev => prev ? { ...prev, isAnalyzing: false } : null);
+    } finally {
+      setIsAdvising(false);
+      adviceAbortRef.current = null;
+    }
+  }, [editor, brief, settings]);
+
   async function generate() {
     if (!editor || busy) return;
     if (!brief.name.trim() || !brief.crowd.trim()) {
@@ -315,12 +452,22 @@ export default function App() {
         const now = Date.now();
         if (now - lastRender < 120) return;
         lastRender = now;
-        editor.commands.setContent(sectionsToHtml(parseSections(partial)), false);
+        // 流式中间帧不进入 Undo 历史栈，避免生成后撤销需回退几十次中间状态 (P1-1)
+        editor
+          .chain()
+          .setContent(sectionsToHtml(parseSections(partial)), false)
+          .command(({ tr }) => {
+            tr.setMeta('addToHistory', false);
+            return true;
+          })
+          .run();
       });
+      // 最终成稿作为单次完整操作入栈，支持 Ctrl+Z 一次撤销回生成前基线
       editor.commands.setContent(sectionsToHtml(parseSections(raw)), false);
       const snapLabel = (hadBefore ? '重新生成·' : '初稿·') + selectedFramework.name;
       const v = pushSnap(snapLabel, '');
       setStatus('完成' + (v ? ' · 已存 v' + v : ''));
+      triggerAdvice(snapLabel);
     } catch (e) {
       const err = e as Error;
       if (err.name === 'AbortError') {
@@ -451,6 +598,7 @@ export default function App() {
     dispatchSuggestion(editor, { type: 'remove', id: cur.id });
     pushSnap('接受改写 · ' + cur.instruction);
     setStatus('已接受');
+    triggerAdvice('接受改写 · ' + cur.instruction, cur.replacement);
   }
 
   function reject(item: Suggestion) {
@@ -475,6 +623,7 @@ export default function App() {
     list.forEach(it => dispatchSuggestion(editor, { type: 'remove', id: it.id }));
     pushSnap('接受全部改写');
     setStatus('已接受 ' + list.length + ' 条');
+    triggerAdvice('批量接受修改');
   }
 
   function rejectAll() {
@@ -648,7 +797,7 @@ export default function App() {
         {busy && <button className="sm danger" onClick={() => abortRef.current?.abort()}>停止</button>}
       </header>
 
-      <main className="app-main">
+      <main className={`app-main ${zenMode ? 'zen-active' : ''}`}>
         {/* P2-7: 窄屏/移动端吸顶分段导航 */}
         <nav className="narrow-nav" aria-label="移动端与窄屏栏目导航">
           <button
@@ -674,7 +823,7 @@ export default function App() {
           </button>
         </nav>
 
-        <aside className="col-left">
+        <aside className={`col-left ${zenMode ? 'zen-hidden' : ''}`}>
           <GeneratePanel
             brief={brief}
             busy={busy}
@@ -695,7 +844,7 @@ export default function App() {
           />
         </aside>
 
-        <section className="col-mid">
+        <section className={`col-mid ${zenMode ? 'zen-full' : ''}`}>
           {titles && (
             <div className="titles-strip">
               <b>配套标题</b>
@@ -753,14 +902,19 @@ export default function App() {
           <EditorPane
             editor={editor}
             busy={busy}
+            advice={advice}
+            isAdvising={isAdvising}
+            onRequestAdvice={() => triggerAdvice('全文重新审阅')}
             onRewrite={rewrite}
             onCopyFullText={copyFullText}
             onExportMarkdown={exportCurrentMarkdown}
+            zenMode={zenMode}
+            onToggleZenMode={() => setZenMode(z => !z)}
             placeholder={<>左边填产品名和目标人群，点「生成文案」。<br />生成后选中任意一段，可让它单独改写。</>}
           />
         </section>
 
-        <aside className="col-right">
+        <aside className={`col-right ${zenMode ? 'zen-hidden' : ''}`}>
           <div className="tabs">
             <button className={tab === 'sg' ? 'on' : ''} onClick={() => setTab('sg')}>
               修改建议{sugs.length ? ` (${sugs.length})` : ''}

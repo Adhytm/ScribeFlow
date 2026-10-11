@@ -324,3 +324,273 @@ export function buildTitlePrompt(f: Brief) {
     ].join('\n')
   };
 }
+
+/**
+ * 启发式副驾驶建议（0ms 瞬间反馈兜底）：
+ * 根据刚刚完成的改写动作或生成结果，推断下一步最具价值的打磨方向。
+ */
+export function getHeuristicPostEditAdvice(
+  lastAction: string,
+  _snippet?: string
+): { summary: string; actions: Array<{ id: string; label: string; instruction: string; desc?: string }> } {
+  const norm = lastAction.toLowerCase();
+
+  // 1. 刚刚改写了：痛点相关
+  if (norm.includes('痛点') || norm.includes('扎心') || norm.includes('共鸣')) {
+    return {
+      summary: '痛点共鸣已经拉满，生活代入感很强！接下来建议在核心卖点段落强化权威背书或实测数据，防止受众产生“光有共鸣却不信效果”的疑虑。',
+      actions: [
+        {
+          id: 'act-proof',
+          label: '补充质检与数据背书',
+          instruction: '在解决方案与核心卖点处补充权威质检资质、关键成分实验数据或实测对比',
+          desc: '强化专业背书与信任基础'
+        },
+        {
+          id: 'act-quote',
+          label: '提炼3条吸睛卖点金句',
+          instruction: '将核心特色与功效提炼浓缩为3句朗朗上口、适合发小红书或海报的高光金句',
+          desc: '提炼短平快的高光文案'
+        },
+        {
+          id: 'act-cta',
+          label: '强化限时促单召唤(CTA)',
+          instruction: '在文末强化限时特惠、限量尝鲜与迫切的行动召唤指令(Call to Action)',
+          desc: '强化结尾行动力与紧迫感'
+        }
+      ]
+    };
+  }
+
+  // 2. 刚刚改写了：闺蜜口语 / 种草风格
+  if (norm.includes('闺蜜') || norm.includes('口语') || norm.includes('种草') || norm.includes('亲切')) {
+    return {
+      summary: '口吻已经变得亲切真实、没有广告八股了！不过口语分享往往容易篇幅偏散，建议在文末补一个清晰直接的限时尝鲜动作指令。',
+      actions: [
+        {
+          id: 'act-cta',
+          label: '强化限时促单召唤(CTA)',
+          instruction: '在文末强化限时特惠、限量尝鲜与迫切的行动召唤指令(Call to Action)',
+          desc: '强化结尾行动力与紧迫感'
+        },
+        {
+          id: 'act-crisp',
+          label: '精炼压缩20%口语赘词',
+          instruction: '精简压缩约20%篇幅，删除口语中的空洞水词与多余铺垫，保持句句有信息量',
+          desc: '去除多余废话，更加精炼干脆'
+        },
+        {
+          id: 'act-proof',
+          label: '补充质检与数据背书',
+          instruction: '补充权威质检资质、关键成分实验数据或研发实力背书，提升客观信任感',
+          desc: '强化专业背书与信任基础'
+        }
+      ]
+    };
+  }
+
+  // 3. 刚刚改写了：数据背书 / 质检
+  if (norm.includes('背书') || norm.includes('数据') || norm.includes('质检') || norm.includes('权威')) {
+    return {
+      summary: '专业信任感已经立住了！为了避免技术参数过于冰冷，建议把关键实验结论翻译成一句生动形象的吸睛高光金句。',
+      actions: [
+        {
+          id: 'act-quote',
+          label: '提炼3条吸睛卖点金句',
+          instruction: '将核心特色与功效提炼浓缩为3句朗朗上口、适合发小红书或海报的高光金句',
+          desc: '提炼短平快的高光文案'
+        },
+        {
+          id: 'act-scene',
+          label: '补充沉浸使用场景',
+          instruction: '补充打工人通勤、下班居家或周末约会等具体沉浸式使用瞬间',
+          desc: '增强身临其境的使用代入感'
+        },
+        {
+          id: 'act-cta',
+          label: '强化限时促单召唤(CTA)',
+          instruction: '在文末强化限时特惠、限量尝鲜与迫切的行动召唤指令(Call to Action)',
+          desc: '强化结尾行动力与紧迫感'
+        }
+      ]
+    };
+  }
+
+  // 4. 刚刚改写了：精简 / 压缩
+  if (norm.includes('精炼') || norm.includes('精简') || norm.includes('压缩') || norm.includes('短')) {
+    return {
+      summary: '文案已经去掉了废话、读起来紧凑有力！此时建议检查首段抓人钩子和结尾行动召唤，确保首尾两个最高价值点足够犀利。',
+      actions: [
+        {
+          id: 'act-hook',
+          label: '强化首句抓人钩子',
+          instruction: '将第一句打磨为一针见血的生活细节、反差悬念或扎心发问，秒停滑屏大拇指',
+          desc: '让第一句更加抓住眼球'
+        },
+        {
+          id: 'act-cta',
+          label: '强化限时促单召唤(CTA)',
+          instruction: '在文末强化限时特惠、限量尝鲜与迫切的行动召唤指令(Call to Action)',
+          desc: '强化结尾行动力与紧迫感'
+        },
+        {
+          id: 'act-quote',
+          label: '提炼3条吸睛卖点金句',
+          instruction: '将核心特色与功效提炼浓缩为3句朗朗上口的高光金句',
+          desc: '提炼短平快的高光文案'
+        }
+      ]
+    };
+  }
+
+  // 5. 刚刚改写了：金句 / 卖点
+  if (norm.includes('金句') || norm.includes('卖点') || norm.includes('高光')) {
+    return {
+      summary: '核心卖点金句已经非常吸睛了！建议结合这些金句，在文末趁热打铁配上一个不容错过的促单福利召唤。',
+      actions: [
+        {
+          id: 'act-cta',
+          label: '强化限时促单召唤(CTA)',
+          instruction: '在文末强化限时特惠、限量尝鲜与迫切的行动召唤指令(Call to Action)',
+          desc: '强化结尾行动力与紧迫感'
+        },
+        {
+          id: 'act-proof',
+          label: '补充质检与数据背书',
+          instruction: '补充权威质检资质、关键成分实验数据或研发实力背书，提升客观信任感',
+          desc: '强化专业背书与信任基础'
+        },
+        {
+          id: 'act-tone',
+          label: '转为闺蜜口语种草腔',
+          instruction: '将语调调整为亲切、自然、口语化的朋友分享种草语气，拒绝生硬广告八股',
+          desc: '更亲和真实的社交分享口吻'
+        }
+      ]
+    };
+  }
+
+  // 6. 刚刚改写了：促单 CTA
+  if (norm.includes('促单') || norm.includes('cta') || norm.includes('行动') || norm.includes('限时')) {
+    return {
+      summary: '结尾行动紧迫感已经到位！建议全文通读一遍，把中间可能存在的空洞形容词做一次微压缩，让节奏更一气呵成。',
+      actions: [
+        {
+          id: 'act-crisp',
+          label: '精炼压缩20%篇幅',
+          instruction: '精简压缩约20%篇幅，删除空洞形容词与假大空的客套修饰，字字有力',
+          desc: '去除多余废话，更加精炼干脆'
+        },
+        {
+          id: 'act-hook',
+          label: '强化首句抓人钩子',
+          instruction: '将第一句打磨为一针见血的生活细节、反差悬念或扎心发问，秒停滑屏大拇指',
+          desc: '让第一句更加抓住眼球'
+        },
+        {
+          id: 'act-quote',
+          label: '提炼3条吸睛卖点金句',
+          instruction: '提炼3句朗朗上口、适合发小红书或海报的高光金句',
+          desc: '提炼短平快的高光文案'
+        }
+      ]
+    };
+  }
+
+  // 7. 刚刚完成了：初稿生成 / 重新生成
+  if (norm.includes('初稿') || norm.includes('生成') || norm.includes('覆盖')) {
+    return {
+      summary: '文案框架已顺利铺开！建议先从抓人痛点或首句钩子着手，让读者滑到第一眼就产生停下来的兴趣。',
+      actions: [
+        {
+          id: 'act-pain',
+          label: '强化痛点共鸣',
+          instruction: '增强目标人群在实际使用场景中的痛点共鸣与生活代入感，让问题更加真实扎心',
+          desc: '突出真实生活困扰与痛点'
+        },
+        {
+          id: 'act-quote',
+          label: '提炼3条吸睛卖点金句',
+          instruction: '将核心特色与功效提炼浓缩为3句朗朗上口的高光金句',
+          desc: '提炼短平快的高光文案'
+        },
+        {
+          id: 'act-tone',
+          label: '转为闺蜜口语种草腔',
+          instruction: '将语调调整为亲切、自然、口语化的朋友分享种草语气，拒绝生硬广告八股',
+          desc: '更亲和真实的社交分享口吻'
+        },
+        {
+          id: 'act-proof',
+          label: '补充质检与数据背书',
+          instruction: '补充权威质检资质、关键成分实验数据或研发实力背书，提升客观信任感',
+          desc: '强化专业背书与信任基础'
+        }
+      ]
+    };
+  }
+
+  // 8. 默认通用进阶建议
+  return {
+    summary: '本次改写已平稳应用。根据当前文案状态，建议继续强化核心卖点与具体背书，或者在文末增强促单行动力。',
+    actions: [
+      {
+        id: 'act-pain',
+        label: '强化痛点共鸣',
+        instruction: '增强目标人群在实际使用场景中的痛点共鸣与生活代入感，让问题更加真实扎心',
+        desc: '突出真实生活困扰与痛点'
+      },
+      {
+        id: 'act-proof',
+        label: '补充质检与数据背书',
+        instruction: '补充权威质检资质、关键成分实验数据或研发实力背书，提升客观信任感',
+        desc: '强化专业背书与信任基础'
+      },
+      {
+        id: 'act-cta',
+        label: '强化限时促单召唤(CTA)',
+        instruction: '在文末强化限时特惠、限量尝鲜与迫切的行动召唤指令(Call to Action)',
+        desc: '强化结尾行动力与紧迫感'
+      }
+    ]
+  };
+}
+
+/**
+ * 实时 AI 副驾驶深度审阅 Prompt：
+ * 调用大模型审阅最新文案与修改上下文，输出量身定制的一针见血建议和 2~3 个下一步胶囊。
+ */
+export function buildPostEditAdvicePrompt(
+  f: Brief,
+  currentDoc: string,
+  lastAction: string,
+  lastSnippet?: string
+) {
+  return {
+    system: `你是一位专业电商内容总监和资深 AI 副驾驶（Copilot）。
+你的任务是：在用户刚刚完成一次文案生成或改写后，审视当前文案，以真诚、专业且大白话的方式，给出 1~2 句切中要害的进一步修改建议（指出当前文案还缺什么、哪里可以更好），并推荐 2~3 个专属的下一步快捷动作。
+输出必须为严格的 JSON 格式，不要包含任何 markdown 代码块标记，不要包含其他说明。
+JSON 格式如下：
+{
+  "summary": "一到两句大白话诊断建议（例如：语气已经很亲切了，不过结尾还没给行动指令，用户看完了不知道下一步去哪买。）",
+  "actions": [
+    { "label": "强化限时促单(CTA)", "instruction": "在文末强化限时特惠与行动召唤指令" },
+    { "label": "补充质检数据背书", "instruction": "在核心功效段落补充具体实验室检测数据或权威资质" }
+  ]
+}`,
+    user: [
+      '# 产品与目标人群',
+      briefText(f),
+      '',
+      '# 刚刚完成的修改动作',
+      lastAction,
+      lastSnippet ? `相关片段内容：${lastSnippet.slice(0, 400)}` : '',
+      '',
+      '# 当前最新文案全文',
+      currentDoc.slice(0, 2500),
+      '',
+      '请根据当前最新全文和刚刚完成的修改，给出你的进一步建议和 2~3 个下一步快捷动作：'
+    ].filter(Boolean).join('\n')
+  };
+}
+

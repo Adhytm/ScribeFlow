@@ -33,7 +33,10 @@ export interface TestConnectionResult {
 async function post(body: Record<string, unknown>, signal?: AbortSignal) {
   const res = await fetch('/api/llm', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'ScribeFlow'
+    },
     body: JSON.stringify(body),
     signal
   });
@@ -62,7 +65,10 @@ export async function testConnection(params: TestConnectionParams): Promise<Test
   try {
     const res = await fetch('/api/llm', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'ScribeFlow'
+      },
       body: JSON.stringify({
         action: 'test-connection',
         provider: params.provider,
@@ -214,3 +220,53 @@ export function textToHtml(text: string): string {
     .map(p => `<p>${escapeHtml(p)}</p>`)
     .join('');
 }
+
+/**
+ * 健壮地从大模型返回的文本中提取并解析 JSON 对象
+ */
+export function extractJsonFromResponse<T = any>(raw: string): T | null {
+  try {
+    const trimmed = raw.trim();
+    const unquoted = trimmed
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim();
+
+    const match = unquoted.match(/\{[\s\S]*\}/);
+    if (match) {
+      return JSON.parse(match[0]);
+    }
+    return JSON.parse(unquoted);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 异步获取大模型对修改后文案的实时副驾诊断建议
+ */
+export async function requestPostEditAdvice(
+  system: string,
+  user: string,
+  opts: ChatOptions
+): Promise<{ summary: string; actions: Array<{ label: string; instruction: string }> } | null> {
+  try {
+    const full = await streamChat(system, user, { ...opts, temperature: 0.7 }, () => {});
+    const parsed = extractJsonFromResponse<{ summary?: string; actions?: Array<{ label?: string; instruction?: string }> }>(full);
+    if (parsed && typeof parsed.summary === 'string' && Array.isArray(parsed.actions)) {
+      const validActions = parsed.actions
+        .filter(a => a && typeof a.label === 'string' && typeof a.instruction === 'string')
+        .map(a => ({ label: a.label!.trim(), instruction: a.instruction!.trim() }));
+      return {
+        summary: parsed.summary.trim(),
+        actions: validActions
+      };
+    }
+    return null;
+  } catch (e) {
+    console.warn('请求 AI 副驾下一步建议失败，回退至本地启发式分析:', e);
+    return null;
+  }
+}
+

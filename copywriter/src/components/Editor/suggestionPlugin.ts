@@ -37,17 +37,16 @@ export const SuggestionExtension = Extension.create({
           init: (): SuggestionState => ({ items: [] }),
 
           apply(tr, value) {
-            // 起点向左偏、终点向右偏，避免边界插入把建议撑大或吞掉新内容
+            // 起点向右偏(1)、终点向左偏(-1)，确保在选区边界处键入文字时不会把新字符包裹进比对区间，防止误杀失效
             let items = value.items
               .map(it => ({
                 ...it,
-                from: tr.mapping.map(it.from, -1),
-                to: tr.mapping.map(it.to, 1)
+                from: tr.mapping.map(it.from, 1),
+                to: tr.mapping.map(it.to, -1)
               })
             )
               .filter(it => it.from >= 0 && it.to > it.from && it.to <= tr.doc.content.size)
-              // 光看坐标不够：原文被删掉后 to 会因右偏而没塌缩，建议会变成指向错误位置的幽灵。
-              // 直接跟原文比对，对不上就作废。
+              // 光看坐标不够：原文被篡改或删除后，直接跟原文比对，对不上才作废。
               .filter(it => tr.doc.textBetween(it.from, it.to, '\n') === it.original);
 
             const meta = tr.getMeta(suggestionKey) as SuggestionMeta | undefined;
