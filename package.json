@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "npm --prefix copywriter run dev",
     "build": "npm --prefix copywriter run build",
-    "start": "npm --prefix copywriter start"
+    "start": "npm --prefix copywriter start",
+    "audit": "npm --prefix copywriter run audit"
   }
 }

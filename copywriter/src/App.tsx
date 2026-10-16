@@ -455,7 +455,7 @@ export default function App() {
         // 流式中间帧不进入 Undo 历史栈，避免生成后撤销需回退几十次中间状态 (P1-1)
         editor
           .chain()
-          .setContent(sectionsToHtml(parseSections(partial)), false)
+          .setContent(sectionsToHtml(parseSections(partial)), { emitUpdate: false })
           .command(({ tr }) => {
             tr.setMeta('addToHistory', false);
             return true;
@@ -463,7 +463,7 @@ export default function App() {
           .run();
       });
       // 最终成稿作为单次完整操作入栈，支持 Ctrl+Z 一次撤销回生成前基线
-      editor.commands.setContent(sectionsToHtml(parseSections(raw)), false);
+      editor.commands.setContent(sectionsToHtml(parseSections(raw)), { emitUpdate: false });
       const snapLabel = (hadBefore ? '重新生成·' : '初稿·') + selectedFramework.name;
       const v = pushSnap(snapLabel, '');
       setStatus('完成' + (v ? ' · 已存 v' + v : ''));
@@ -663,7 +663,7 @@ export default function App() {
       }
     }
     dispatchSuggestion(editor, { type: 'clear' });
-    editor.commands.setContent(s.html, false);
+    editor.commands.setContent(s.html, { emitUpdate: false });
     storage.saveDoc(s.html);
     setTitles(s.titles);
     storage.saveTitles(s.titles);
