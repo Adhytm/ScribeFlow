@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![React](https://img.shields.io/badge/React-18.3-61dafb.svg)](https://react.dev/)
-[![Tiptap](https://img.shields.io/badge/Tiptap-2.11-gray.svg)](https://tiptap.dev/)
+[![Tiptap](https://img.shields.io/badge/Tiptap-3.32-gray.svg)](https://tiptap.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6.0-646cff.svg)](https://vitejs.dev/)
 
 ---
